@@ -60,24 +60,32 @@ Respond in JSON format:
   ] // Only include if isAppropriate is false
 }`;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-5",
-    messages: [
-      {
-        role: "system",
-        content: "You are an expert in child safety and content moderation. Analyze content objectively and err on the side of caution when it comes to child safety. Always respond with valid JSON.",
-      },
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
-    response_format: { type: "json_object" },
-    max_completion_tokens: 1024,
-  });
+  let response;
+  try {
+    response = await openai.chat.completions.create({
+      model: "gpt-5",
+      messages: [
+        {
+          role: "system",
+          content: "You are an expert in child safety and content moderation. Analyze content objectively and err on the side of caution when it comes to child safety. Always respond with valid JSON.",
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      response_format: { type: "json_object" },
+      max_completion_tokens: 4096,
+    });
+  } catch (apiError: any) {
+    console.error("OpenAI API error:", apiError?.message || apiError);
+    console.error("Error details:", JSON.stringify(apiError, null, 2));
+    throw new Error(`AI API error: ${apiError?.message || "Unknown error"}`);
+  }
 
   const content = response.choices[0]?.message?.content;
   if (!content) {
+    console.error("Empty response from AI. Full response:", JSON.stringify(response, null, 2));
     throw new Error("No response from AI");
   }
 
