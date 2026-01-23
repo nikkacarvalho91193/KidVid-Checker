@@ -4,8 +4,9 @@ import { VideoCard } from "@/components/VideoCard";
 import { AnalysisModal } from "@/components/AnalysisModal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Sparkles, Loader2, AlertCircle, Info, Brain, Eye, ShieldAlert, Heart } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
+import { Search, Sparkles, Loader2, AlertCircle, Info, Brain, Eye, ShieldAlert, Heart, Shield, CheckCircle2, Zap } from "lucide-react";
+import { motion } from "framer-motion";
 import type { VideoAnalysis } from "@shared/schema";
 
 export default function Home() {
@@ -39,30 +40,79 @@ export default function Home() {
   return (
     <div className="min-h-screen pb-20">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary/5 via-primary/3 to-transparent pb-6 sm:pb-10 pt-8 sm:pt-12 md:pt-16">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary/8 via-accent/5 to-transparent pb-8 sm:pb-12 pt-10 sm:pt-16 md:pt-20">
+        {/* Animated floating shapes */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <motion.div
+            animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-20 left-[10%] w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl blur-sm"
+          />
+          <motion.div
+            animate={{ y: [0, 15, 0], rotate: [0, -5, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute top-32 right-[15%] w-12 h-12 sm:w-20 sm:h-20 bg-gradient-to-br from-accent/25 to-accent/5 rounded-full blur-sm"
+          />
+          <motion.div
+            animate={{ y: [0, 10, 0], x: [0, 5, 0] }}
+            transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            className="absolute bottom-20 left-[20%] w-10 h-10 sm:w-16 sm:h-16 bg-gradient-to-br from-green-400/20 to-green-400/5 rounded-xl blur-sm"
+          />
+          <motion.div
+            animate={{ y: [0, -15, 0], rotate: [0, 10, 0] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+            className="absolute bottom-32 right-[10%] w-14 h-14 sm:w-20 sm:h-20 bg-gradient-to-br from-purple-400/15 to-purple-400/5 rounded-3xl blur-sm"
+          />
+        </div>
+
         <div className="container mx-auto px-3 sm:px-4 relative z-10">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="max-w-2xl mx-auto"
           >
-            <div className="bg-card border border-border/50 rounded-2xl sm:rounded-3xl shadow-lg shadow-primary/5 p-6 sm:p-10 md:p-12 text-center">
-              <motion.h1 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="text-2xl sm:text-4xl md:text-5xl font-display font-bold text-foreground mb-4 sm:mb-5"
-              >
-                Is this video <span className="text-primary">safe for kids?</span>
-              </motion.h1>
-              <motion.p 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.15 }}
-                className="text-sm sm:text-base md:text-lg text-muted-foreground mb-8 sm:mb-10 max-w-lg mx-auto"
-              >
-                Our AI analyzes content instantly to give parents and educators peace of mind.
-              </motion.p>
+            <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl sm:rounded-3xl shadow-xl shadow-primary/10 p-6 sm:p-10 md:p-12 text-center relative overflow-hidden">
+              {/* Subtle gradient overlay on card */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/3 via-transparent to-accent/3 pointer-events-none" />
+              
+              <div className="relative z-10">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.05 }}
+                  className="mb-4 sm:mb-5"
+                >
+                  <Badge variant="secondary" className="px-3 py-1 text-xs sm:text-sm font-medium bg-primary/10 text-primary border-primary/20">
+                    <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1.5" />
+                    AI-Powered Safety Analysis
+                  </Badge>
+                </motion.div>
+
+                <motion.h1 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="text-2xl sm:text-4xl md:text-5xl font-display font-bold text-foreground mb-4 sm:mb-5"
+                >
+                  Is this video{" "}
+                  <span className="relative">
+                    <span className="text-primary">safe for kids?</span>
+                    <motion.span
+                      initial={{ width: 0 }}
+                      animate={{ width: "100%" }}
+                      transition={{ delay: 0.5, duration: 0.5 }}
+                      className="absolute bottom-0 left-0 h-1 sm:h-1.5 bg-primary/30 rounded-full"
+                    />
+                  </span>
+                </motion.h1>
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.15 }}
+                  className="text-sm sm:text-base md:text-lg text-muted-foreground mb-8 sm:mb-10 max-w-lg mx-auto"
+                >
+                  Our AI analyzes YouTube content instantly to give parents and educators peace of mind.
+                </motion.p>
 
               <motion.form 
                 initial={{ opacity: 0, y: 10 }}
@@ -123,14 +173,37 @@ export default function Home() {
                   </Button>
                 </div>
               </motion.form>
+              </div>
             </div>
+
+            {/* Trust indicators below the card */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mt-6 sm:mt-8 text-xs sm:text-sm text-muted-foreground"
+            >
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                <span>Free to use</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Zap className="w-4 h-4 text-amber-500" />
+                <span>Instant results</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Shield className="w-4 h-4 text-primary" />
+                <span>Parent approved</span>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
 
         {/* Decorative background elements */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 opacity-30 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 opacity-40 pointer-events-none">
           <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
           <div className="absolute top-1/2 -right-24 w-72 h-72 bg-accent/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-green-400/10 rounded-full blur-3xl" />
         </div>
       </section>
 
@@ -169,39 +242,76 @@ export default function Home() {
 
         {/* Empty State / Initial Instructions */}
         {!searchMutation.isSuccess && !searchMutation.isPending && !searchMutation.isError && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 max-w-4xl mx-auto mt-8 sm:mt-12 text-center px-2 sm:px-0">
-            <div className="p-4 sm:p-6 bg-card rounded-2xl border border-border/50">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 text-primary">
-                <Search className="w-5 h-5 sm:w-6 sm:h-6" />
-              </div>
-              <h3 className="font-bold mb-1 sm:mb-2 text-sm sm:text-base">1. Search</h3>
-              <p className="text-muted-foreground text-xs sm:text-sm">Find videos by keyword or paste a direct YouTube link.</p>
-            </div>
-            <div className="p-4 sm:p-6 bg-card rounded-2xl border border-border/50">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 text-accent">
-                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
-              </div>
-              <h3 className="font-bold mb-1 sm:mb-2 text-sm sm:text-base">2. Analyze</h3>
-              <p className="text-muted-foreground text-xs sm:text-sm">Our AI scans metadata and content patterns.</p>
-            </div>
-            <div className="p-4 sm:p-6 bg-card rounded-2xl border border-border/50">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 text-green-600 dark:text-green-400">
-                <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6" />
-              </div>
-              <h3 className="font-bold mb-1 sm:mb-2 text-sm sm:text-base">3. Decide</h3>
-              <p className="text-muted-foreground text-xs sm:text-sm">Get a clear safety score and age rating.</p>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto mt-8 sm:mt-12 text-center px-2 sm:px-0">
+            {[
+              {
+                icon: Search,
+                title: "1. Search",
+                description: "Find videos by keyword or paste a direct YouTube link.",
+                gradient: "from-primary/20 to-primary/5",
+                iconBg: "bg-primary/10",
+                iconColor: "text-primary",
+                delay: 0.1
+              },
+              {
+                icon: Sparkles,
+                title: "2. Analyze",
+                description: "Our AI scans metadata and content patterns instantly.",
+                gradient: "from-accent/20 to-accent/5",
+                iconBg: "bg-accent/10",
+                iconColor: "text-accent",
+                delay: 0.2
+              },
+              {
+                icon: Shield,
+                title: "3. Decide",
+                description: "Get a clear safety score and age recommendation.",
+                gradient: "from-green-400/20 to-green-400/5",
+                iconBg: "bg-green-100 dark:bg-green-900/30",
+                iconColor: "text-green-600 dark:text-green-400",
+                delay: 0.3
+              }
+            ].map((step) => (
+              <motion.div
+                key={step.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: step.delay }}
+                whileHover={{ y: -4, scale: 1.02 }}
+                className="p-5 sm:p-6 bg-card rounded-2xl border border-border/50 shadow-sm hover:shadow-lg hover:border-primary/20 transition-all duration-300 relative overflow-hidden group"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${step.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                <div className="relative z-10">
+                  <div className={`w-12 h-12 sm:w-14 sm:h-14 ${step.iconBg} rounded-2xl flex items-center justify-center mx-auto mb-4 ${step.iconColor} group-hover:scale-110 transition-transform duration-300`}>
+                    <step.icon className="w-6 h-6 sm:w-7 sm:h-7" />
+                  </div>
+                  <h3 className="font-bold mb-2 text-base sm:text-lg">{step.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         )}
 
         {/* AI Information Section */}
-        <div className="max-w-4xl mx-auto mt-12 sm:mt-16 px-2 sm:px-0">
-          <div className="bg-card border border-border/50 rounded-2xl p-5 sm:p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary">
-                <Info className="w-5 h-5" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="max-w-4xl mx-auto mt-12 sm:mt-16 px-2 sm:px-0"
+        >
+          <div className="bg-card border border-border/50 rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-sm relative overflow-hidden">
+            {/* Decorative gradient */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/5 to-transparent pointer-events-none" />
+            
+            <div className="flex items-center gap-3 mb-6 sm:mb-8 relative z-10">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center text-primary">
+                <Info className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <h2 className="text-lg sm:text-xl font-display font-bold">How Our AI Works</h2>
+              <div>
+                <h2 className="text-lg sm:text-xl font-display font-bold">How Our AI Works</h2>
+                <p className="text-xs sm:text-sm text-muted-foreground">Understanding our safety analysis process</p>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8">
@@ -256,7 +366,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="bg-secondary/30 rounded-xl p-4 border border-secondary/50">
+            <div className="bg-gradient-to-r from-secondary/40 to-secondary/20 rounded-xl p-4 sm:p-5 border border-secondary/50 relative z-10">
               <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed" data-testid="text-disclaimer">
                 <strong className="text-foreground">Important:</strong> This tool provides AI-generated suggestions based on limited information. 
                 It cannot guarantee complete accuracy and should not be your only source for content decisions. 
@@ -265,7 +375,7 @@ export default function Home() {
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       <AnalysisModal 
