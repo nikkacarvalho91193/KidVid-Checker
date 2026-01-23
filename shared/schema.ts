@@ -28,6 +28,9 @@ export const videoAnalysis = pgTable("video_analysis", {
   // Alternative suggestions for unsafe content
   alternativeSuggestions: jsonb("alternative_suggestions").$type<AlternativeSuggestion[]>(),
   
+  // Overstimulation analysis
+  overstimulationAnalysis: jsonb("overstimulation_analysis").$type<OverstimulationAnalysis>(),
+  
   analyzedAt: timestamp("analyzed_at").defaultNow(),
 });
 
@@ -36,6 +39,14 @@ export interface AlternativeSuggestion {
   searchQuery: string;
   reason: string;
   suggestedChannels: string[];
+}
+
+// Overstimulation analysis type
+export interface OverstimulationAnalysis {
+  rating: "low" | "moderate" | "high";
+  explanation: string;
+  ageRecommendation: string;
+  factors: string[];
 }
 
 // === SCHEMAS ===

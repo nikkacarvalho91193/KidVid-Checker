@@ -65,6 +65,7 @@ export async function registerRoutes(
         tags: analysisResult.tags,
         ageRating: analysisResult.ageRating,
         alternativeSuggestions: analysisResult.alternativeSuggestions,
+        overstimulationAnalysis: analysisResult.overstimulationAnalysis,
       });
       
       res.json(analysis);

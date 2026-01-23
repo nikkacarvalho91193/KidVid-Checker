@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import type { AlternativeSuggestion } from "@shared/schema";
+import type { AlternativeSuggestion, OverstimulationAnalysis } from "@shared/schema";
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
@@ -13,6 +13,7 @@ export interface AnalysisResult {
   tags: string[];
   ageRating: string;
   alternativeSuggestions?: AlternativeSuggestion[];
+  overstimulationAnalysis?: OverstimulationAnalysis;
 }
 
 export async function analyzeVideoContent(
@@ -30,6 +31,19 @@ Analyze the following video information and determine:
 4. What content tags apply? (e.g., educational, cartoon, music, gaming, scary, violence, language, mature themes)
 5. A brief explanation of your reasoning.
 6. If the content is NOT appropriate for children, suggest 2-3 child-safe alternative search queries based on the video's topic. Include known kid-friendly YouTube channels that cover similar topics.
+7. OVERSTIMULATION ANALYSIS (Decision Support Feature - Not Medical Advice): Analyze the video metadata for indicators of potentially overstimulating content for young children. Consider these factors:
+   - Rapid scene changes or fast editing (often indicated by words like "compilation", "fast", "quick cuts")
+   - Excessive sound effects (indicated by descriptions mentioning lots of sounds, noises)
+   - Intense or loud background music (energetic, upbeat, electronic music references)
+   - Repeated visual cues or patterns (looping content, repetitive sequences)
+   - Bright colors or flashing visuals (neon, colorful, flashing, bright)
+   - Fast-paced language or narration
+   - Highly repetitive phrasing or content
+   
+   Rate the overstimulation level as "low", "moderate", or "high" and provide:
+   - A parent-friendly explanation (1-2 sentences)
+   - Age recommendation: Who is this appropriate for? (e.g., "Suitable for toddlers 2+", "Better for preschoolers 4+", "Best for school-age children 6+")
+   - List of detected overstimulation factors
 
 Video Information:
 - Title: ${title}
@@ -57,7 +71,13 @@ Respond in JSON format:
       "reason": "why this is a good alternative",
       "suggestedChannels": ["Channel Name 1", "Channel Name 2"]
     }
-  ] // Only include if isAppropriate is false
+  ],
+  "overstimulationAnalysis": {
+    "rating": "low" | "moderate" | "high",
+    "explanation": "Parent-friendly explanation of overstimulation assessment",
+    "ageRecommendation": "Suitable for toddlers 2+" | "Better for preschoolers 4+" | "Best for school-age children 6+" | etc.,
+    "factors": ["factor1", "factor2"] // detected overstimulation factors, empty array if low
+  }
 }`;
 
   let response;
@@ -100,6 +120,12 @@ Respond in JSON format:
       alternativeSuggestions: result.isAppropriate === false && Array.isArray(result.alternativeSuggestions) 
         ? result.alternativeSuggestions 
         : undefined,
+      overstimulationAnalysis: result.overstimulationAnalysis ? {
+        rating: result.overstimulationAnalysis.rating ?? "low",
+        explanation: result.overstimulationAnalysis.explanation ?? "No overstimulation concerns detected.",
+        ageRecommendation: result.overstimulationAnalysis.ageRecommendation ?? "Suitable for all ages",
+        factors: Array.isArray(result.overstimulationAnalysis.factors) ? result.overstimulationAnalysis.factors : [],
+      } : undefined,
     };
   } catch {
     throw new Error("Failed to parse AI response");
