@@ -87,15 +87,15 @@ export default function Home() {
                   <Button 
                     type="submit" 
                     disabled={searchMutation.isPending}
-                    className="w-full h-12 rounded-xl font-semibold text-base"
+                    className="w-full h-12 rounded-xl font-semibold text-base bg-primary hover:bg-primary/90 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/25 active:scale-[0.98] transition-all duration-200"
                     data-testid="button-search"
                   >
                     {searchMutation.isPending ? (
                       <Loader2 className="w-5 h-5 animate-spin mr-2" />
                     ) : (
-                      <Search className="w-5 h-5 mr-2" />
+                      <Sparkles className="w-5 h-5 mr-2" />
                     )}
-                    {searchMutation.isPending ? "Searching..." : "Search Videos"}
+                    {searchMutation.isPending ? "Analyzing..." : "Analyze Video"}
                   </Button>
                 </div>
                 
@@ -112,13 +112,14 @@ export default function Home() {
                   <Button 
                     type="submit" 
                     disabled={searchMutation.isPending}
-                    className="absolute right-2 top-2 rounded-full h-12 px-8 font-semibold text-base"
+                    className="absolute right-2 top-2 rounded-full h-12 px-6 font-semibold text-base bg-primary hover:bg-primary/90 hover:scale-105 hover:shadow-lg hover:shadow-primary/25 active:scale-[0.98] transition-all duration-200"
                   >
                     {searchMutation.isPending ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <Loader2 className="w-5 h-5 animate-spin mr-2" />
                     ) : (
-                      "Search"
+                      <Sparkles className="w-4 h-4 mr-2" />
                     )}
+                    {searchMutation.isPending ? "Analyzing..." : "Analyze"}
                   </Button>
                 </div>
               </motion.form>
