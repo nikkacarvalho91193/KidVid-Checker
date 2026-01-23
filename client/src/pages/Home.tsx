@@ -9,9 +9,9 @@ import { Search, Sparkles, Loader2, AlertCircle, Info, Brain, Eye, ShieldAlert, 
 import { motion } from "framer-motion";
 import type { VideoAnalysis } from "@shared/schema";
 
-import familyHomeImg from "@assets/family-home.jpg";
-import kidsPlayingImg from "@assets/kids-playing.jpg";
-import bubblesImg from "@assets/bubbles-bg.jpg";
+import childWatchingTvImg from "@assets/child-watching-tv.jpg";
+import kidRemoteImg from "@assets/kid-remote.jpg";
+import familyScreenImg from "@assets/family-screen.jpg";
 
 export default function Home() {
   const [query, setQuery] = useState("");
@@ -76,7 +76,7 @@ export default function Home() {
             transition={{ opacity: { duration: 0.5 }, scale: { duration: 0.5 }, y: { duration: 5, repeat: Infinity, ease: "easeInOut" }, rotate: { duration: 6, repeat: Infinity, ease: "easeInOut" } }}
             className="hidden md:block absolute top-8 left-[2%] lg:top-16 lg:left-[5%] w-24 h-18 md:w-28 md:h-20 lg:w-32 lg:h-24 xl:w-40 xl:h-28 rounded-xl overflow-hidden shadow-2xl shadow-black/30 border-4 border-white dark:border-gray-800 z-[1]"
           >
-            <img src={familyHomeImg} alt="" className="w-full h-full object-cover" />
+            <img src={childWatchingTvImg} alt="" className="w-full h-full object-cover" />
           </motion.div>
           
           <motion.div
@@ -85,7 +85,7 @@ export default function Home() {
             transition={{ opacity: { duration: 0.5, delay: 0.2 }, scale: { duration: 0.5, delay: 0.2 }, y: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }, rotate: { duration: 7, repeat: Infinity, ease: "easeInOut" } }}
             className="hidden md:block absolute top-12 right-[2%] lg:top-24 lg:right-[4%] w-24 h-16 md:w-28 md:h-20 lg:w-32 lg:h-22 xl:w-36 xl:h-24 rounded-xl overflow-hidden shadow-2xl shadow-black/30 border-4 border-white dark:border-gray-800 z-[1]"
           >
-            <img src={kidsPlayingImg} alt="" className="w-full h-full object-cover" />
+            <img src={kidRemoteImg} alt="" className="w-full h-full object-cover" />
           </motion.div>
           
           <motion.div
@@ -94,7 +94,7 @@ export default function Home() {
             transition={{ opacity: { duration: 0.5, delay: 0.4 }, scale: { duration: 0.5, delay: 0.4 }, y: { duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }, rotate: { duration: 8, repeat: Infinity, ease: "easeInOut" } }}
             className="hidden lg:block absolute bottom-8 left-[3%] lg:bottom-16 lg:left-[8%] w-28 h-20 lg:w-32 lg:h-22 rounded-xl overflow-hidden shadow-2xl shadow-black/30 border-4 border-white dark:border-gray-800 z-[1]"
           >
-            <img src={bubblesImg} alt="" className="w-full h-full object-cover" />
+            <img src={familyScreenImg} alt="" className="w-full h-full object-cover" />
           </motion.div>
         </div>
 
