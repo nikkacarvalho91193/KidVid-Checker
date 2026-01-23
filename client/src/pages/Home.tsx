@@ -4,7 +4,7 @@ import { VideoCard } from "@/components/VideoCard";
 import { AnalysisModal } from "@/components/AnalysisModal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Sparkles, Loader2, AlertCircle } from "lucide-react";
+import { Search, Sparkles, Loader2, AlertCircle, Info, Brain, Eye, ShieldAlert, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { VideoAnalysis } from "@shared/schema";
 
@@ -185,6 +185,79 @@ export default function Home() {
             </div>
           </div>
         )}
+
+        {/* AI Information Section */}
+        <div className="max-w-4xl mx-auto mt-12 sm:mt-16 px-2 sm:px-0">
+          <div className="bg-card border border-border/50 rounded-2xl p-5 sm:p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+                <Info className="w-5 h-5" />
+              </div>
+              <h2 className="text-lg sm:text-xl font-display font-bold">How Our AI Works</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8">
+              <div className="space-y-4">
+                <div className="flex gap-3">
+                  <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
+                    <Eye className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-sm sm:text-base mb-1">What We Analyze</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
+                      Our AI examines video titles, descriptions, channel information, and available metadata to assess content appropriateness.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-400 flex-shrink-0">
+                    <Brain className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-sm sm:text-base mb-1">AI-Powered Detection</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
+                      We use advanced language models to identify potentially concerning themes, language, and content patterns.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex gap-3">
+                  <div className="w-8 h-8 bg-amber-100 dark:bg-amber-900/30 rounded-lg flex items-center justify-center text-amber-600 dark:text-amber-400 flex-shrink-0">
+                    <ShieldAlert className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-sm sm:text-base mb-1">Limitations to Know</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
+                      AI cannot watch the actual video content. It relies on text metadata, which may not capture everything in the video itself.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="w-8 h-8 bg-rose-100 dark:bg-rose-900/30 rounded-lg flex items-center justify-center text-rose-600 dark:text-rose-400 flex-shrink-0">
+                    <Heart className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-sm sm:text-base mb-1">Your Judgment Matters</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
+                      This tool is a helpful starting point, but nothing replaces a parent's judgment and knowing what's right for your child.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-secondary/30 rounded-xl p-4 border border-secondary/50">
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed" data-testid="text-disclaimer">
+                <strong className="text-foreground">Important:</strong> This tool provides AI-generated suggestions based on limited information. 
+                It cannot guarantee complete accuracy and should not be your only source for content decisions. 
+                Creators may use misleading titles or descriptions. Always preview content yourself when possible, 
+                especially for younger children. Your parental instincts and knowledge of your child are irreplaceable.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <AnalysisModal 
