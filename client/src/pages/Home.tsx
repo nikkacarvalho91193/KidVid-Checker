@@ -9,6 +9,10 @@ import { Search, Sparkles, Loader2, AlertCircle, Info, Brain, Eye, ShieldAlert, 
 import { motion } from "framer-motion";
 import type { VideoAnalysis } from "@shared/schema";
 
+import familyHomeImg from "@assets/family-home.jpg";
+import kidsPlayingImg from "@assets/kids-playing.jpg";
+import bubblesImg from "@assets/bubbles-bg.jpg";
+
 export default function Home() {
   const [query, setQuery] = useState("");
   const [selectedAnalysis, setSelectedAnalysis] = useState<VideoAnalysis | null>(null);
@@ -41,8 +45,9 @@ export default function Home() {
     <div className="min-h-screen pb-20">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/8 via-accent/5 to-transparent pb-8 sm:pb-12 pt-10 sm:pt-16 md:pt-20">
-        {/* Animated floating shapes */}
+        {/* Animated floating shapes and photos */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Abstract shape decorations */}
           <motion.div
             animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
@@ -63,6 +68,34 @@ export default function Home() {
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
             className="absolute bottom-32 right-[10%] w-14 h-14 sm:w-20 sm:h-20 bg-gradient-to-br from-purple-400/15 to-purple-400/5 rounded-3xl blur-sm"
           />
+          
+          {/* Floating photo elements - hidden on mobile for cleaner look */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1, y: [0, -10, 0], rotate: [-3, -1, -3] }}
+            transition={{ opacity: { duration: 0.5 }, scale: { duration: 0.5 }, y: { duration: 5, repeat: Infinity, ease: "easeInOut" }, rotate: { duration: 6, repeat: Infinity, ease: "easeInOut" } }}
+            className="hidden lg:block absolute top-16 left-[5%] w-32 h-24 xl:w-40 xl:h-28 rounded-xl overflow-hidden shadow-xl shadow-black/20 border-4 border-white dark:border-gray-800"
+          >
+            <img src={familyHomeImg} alt="" className="w-full h-full object-cover" />
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1, y: [0, 12, 0], rotate: [2, 4, 2] }}
+            transition={{ opacity: { duration: 0.5, delay: 0.2 }, scale: { duration: 0.5, delay: 0.2 }, y: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }, rotate: { duration: 7, repeat: Infinity, ease: "easeInOut" } }}
+            className="hidden lg:block absolute top-24 right-[4%] w-28 h-20 xl:w-36 xl:h-24 rounded-xl overflow-hidden shadow-xl shadow-black/20 border-4 border-white dark:border-gray-800"
+          >
+            <img src={kidsPlayingImg} alt="" className="w-full h-full object-cover" />
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1, y: [0, -8, 0], rotate: [1, 3, 1] }}
+            transition={{ opacity: { duration: 0.5, delay: 0.4 }, scale: { duration: 0.5, delay: 0.4 }, y: { duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }, rotate: { duration: 8, repeat: Infinity, ease: "easeInOut" } }}
+            className="hidden xl:block absolute bottom-16 left-[8%] w-32 h-22 rounded-xl overflow-hidden shadow-xl shadow-black/20 border-4 border-white dark:border-gray-800 opacity-80"
+          >
+            <img src={bubblesImg} alt="" className="w-full h-full object-cover" />
+          </motion.div>
         </div>
 
         <div className="container mx-auto px-3 sm:px-4 relative z-10">
