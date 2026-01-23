@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import type { VideoAnalysis } from "@shared/schema";
 
 import childWatchingTvImg from "@assets/child-watching-tv.jpg";
-import kidRemoteImg from "@assets/kid-remote.jpg";
+import kidsTabletImg from "@assets/kids-tablet.jpg";
 import familyScreenImg from "@assets/family-screen.jpg";
 
 export default function Home() {
@@ -85,7 +85,7 @@ export default function Home() {
             transition={{ opacity: { duration: 0.5, delay: 0.2 }, scale: { duration: 0.5, delay: 0.2 }, y: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }, rotate: { duration: 7, repeat: Infinity, ease: "easeInOut" } }}
             className="hidden md:block absolute top-12 right-[2%] lg:top-24 lg:right-[4%] w-24 h-16 md:w-28 md:h-20 lg:w-32 lg:h-22 xl:w-36 xl:h-24 rounded-xl overflow-hidden shadow-2xl shadow-black/30 border-4 border-white dark:border-gray-800 z-[1]"
           >
-            <img src={kidRemoteImg} alt="" className="w-full h-full object-cover" />
+            <img src={kidsTabletImg} alt="" className="w-full h-full object-cover" />
           </motion.div>
           
           <motion.div
