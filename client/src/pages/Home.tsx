@@ -39,13 +39,13 @@ export default function Home() {
   return (
     <div className="min-h-screen pb-20">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-primary/5 pb-16 pt-12 md:pt-20">
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center mb-10">
+      <section className="relative overflow-hidden bg-primary/5 pb-10 sm:pb-16 pt-8 sm:pt-12 md:pt-20">
+        <div className="container mx-auto px-3 sm:px-4 relative z-10">
+          <div className="max-w-3xl mx-auto text-center mb-6 sm:mb-10">
             <motion.h1 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-4"
+              className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-3 sm:mb-4 px-2"
             >
               Is this video <span className="text-primary">safe for kids?</span>
             </motion.h1>
@@ -53,10 +53,9 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="text-lg text-muted-foreground mb-8"
+              className="text-sm sm:text-lg text-muted-foreground mb-6 sm:mb-8 px-2"
             >
               Our AI analyzes content instantly to give parents and educators peace of mind.
-              Search for any YouTube video to get started.
             </motion.p>
 
             <motion.form 
@@ -64,23 +63,50 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               onSubmit={handleSearch}
-              className="relative max-w-xl mx-auto"
+              className="relative max-w-xl mx-auto px-2 sm:px-0"
             >
-              <div className="relative group">
+              {/* Mobile: Stacked layout */}
+              <div className="flex flex-col sm:hidden gap-3">
+                <div className="relative group">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors w-5 h-5" />
+                  <Input
+                    type="text"
+                    placeholder="Search for a video..."
+                    className="pl-12 pr-4 h-12 text-base rounded-xl border-2 border-primary/10 bg-white dark:bg-card shadow-lg focus-visible:ring-4 focus-visible:ring-primary/10 focus-visible:border-primary transition-all"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    data-testid="input-search"
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  disabled={searchMutation.isPending}
+                  className="w-full h-12 rounded-xl font-semibold text-base"
+                  data-testid="button-search"
+                >
+                  {searchMutation.isPending ? (
+                    <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                  ) : (
+                    <Search className="w-5 h-5 mr-2" />
+                  )}
+                  {searchMutation.isPending ? "Searching..." : "Search Videos"}
+                </Button>
+              </div>
+              
+              {/* Desktop: Inline layout */}
+              <div className="hidden sm:block relative group">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
                 <Input
                   type="text"
                   placeholder="Paste a YouTube link or search keywords..."
-                  className="pl-12 pr-4 h-14 text-lg rounded-full border-2 border-primary/10 bg-white shadow-lg focus-visible:ring-4 focus-visible:ring-primary/10 focus-visible:border-primary transition-all"
+                  className="pl-12 pr-28 h-14 text-lg rounded-full border-2 border-primary/10 bg-white dark:bg-card shadow-lg focus-visible:ring-4 focus-visible:ring-primary/10 focus-visible:border-primary transition-all"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  data-testid="input-search"
                 />
                 <Button 
                   type="submit" 
                   disabled={searchMutation.isPending}
                   className="absolute right-2 top-2 rounded-full h-10 px-6 font-semibold"
-                  data-testid="button-search"
                 >
                   {searchMutation.isPending ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -101,10 +127,10 @@ export default function Home() {
       </section>
 
       {/* Results Section */}
-      <div className="container mx-auto px-4 mt-8">
+      <div className="container mx-auto px-3 sm:px-4 mt-6 sm:mt-8">
         {searchMutation.isError && (
-          <div className="max-w-xl mx-auto p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive flex items-center gap-3">
-            <AlertCircle className="w-5 h-5" />
+          <div className="max-w-xl mx-auto p-3 sm:p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive flex items-center gap-3 text-sm sm:text-base">
+            <AlertCircle className="w-5 h-5 flex-shrink-0" />
             <p>Something went wrong. Please try again later.</p>
           </div>
         )}
@@ -113,14 +139,14 @@ export default function Home() {
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="space-y-6"
+            className="space-y-4 sm:space-y-6"
           >
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-2 mb-4 sm:mb-6">
               <Sparkles className="w-5 h-5 text-primary" />
-              <h2 className="text-2xl font-display font-bold">Search Results</h2>
+              <h2 className="text-xl sm:text-2xl font-display font-bold">Search Results</h2>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {searchMutation.data?.map((video) => (
                 <VideoCard
                   key={video.id}
@@ -135,27 +161,27 @@ export default function Home() {
 
         {/* Empty State / Initial Instructions */}
         {!searchMutation.isSuccess && !searchMutation.isPending && !searchMutation.isError && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mt-12 text-center">
-            <div className="p-6 bg-card rounded-2xl border border-border/50">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
-                <Search className="w-6 h-6" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 max-w-4xl mx-auto mt-8 sm:mt-12 text-center px-2 sm:px-0">
+            <div className="p-4 sm:p-6 bg-card rounded-2xl border border-border/50">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 text-primary">
+                <Search className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <h3 className="font-bold mb-2">1. Search</h3>
-              <p className="text-muted-foreground text-sm">Find videos by keyword or paste a direct YouTube link.</p>
+              <h3 className="font-bold mb-1 sm:mb-2 text-sm sm:text-base">1. Search</h3>
+              <p className="text-muted-foreground text-xs sm:text-sm">Find videos by keyword or paste a direct YouTube link.</p>
             </div>
-            <div className="p-6 bg-card rounded-2xl border border-border/50">
-              <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4 text-accent">
-                <Sparkles className="w-6 h-6" />
+            <div className="p-4 sm:p-6 bg-card rounded-2xl border border-border/50">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 text-accent">
+                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <h3 className="font-bold mb-2">2. Analyze</h3>
-              <p className="text-muted-foreground text-sm">Our AI scans metadata, thumbnails, and content patterns.</p>
+              <h3 className="font-bold mb-1 sm:mb-2 text-sm sm:text-base">2. Analyze</h3>
+              <p className="text-muted-foreground text-xs sm:text-sm">Our AI scans metadata and content patterns.</p>
             </div>
-            <div className="p-6 bg-card rounded-2xl border border-border/50">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-green-600">
-                <AlertCircle className="w-6 h-6" />
+            <div className="p-4 sm:p-6 bg-card rounded-2xl border border-border/50">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 text-green-600 dark:text-green-400">
+                <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <h3 className="font-bold mb-2">3. Decide</h3>
-              <p className="text-muted-foreground text-sm">Get a clear safety score, age rating, and content warnings.</p>
+              <h3 className="font-bold mb-1 sm:mb-2 text-sm sm:text-base">3. Decide</h3>
+              <p className="text-muted-foreground text-xs sm:text-sm">Get a clear safety score and age rating.</p>
             </div>
           </div>
         )}
