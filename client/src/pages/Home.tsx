@@ -39,84 +39,91 @@ export default function Home() {
   return (
     <div className="min-h-screen pb-20">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-primary/5 pb-10 sm:pb-16 pt-8 sm:pt-12 md:pt-20">
+      <section className="relative overflow-hidden bg-gradient-to-b from-primary/5 via-primary/3 to-transparent pb-6 sm:pb-10 pt-8 sm:pt-12 md:pt-16">
         <div className="container mx-auto px-3 sm:px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center mb-6 sm:mb-10">
-            <motion.h1 
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-3 sm:mb-4 px-2"
-            >
-              Is this video <span className="text-primary">safe for kids?</span>
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="text-sm sm:text-lg text-muted-foreground mb-6 sm:mb-8 px-2"
-            >
-              Our AI analyzes content instantly to give parents and educators peace of mind.
-            </motion.p>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-2xl mx-auto"
+          >
+            <div className="bg-card border border-border/50 rounded-2xl sm:rounded-3xl shadow-lg shadow-primary/5 p-6 sm:p-10 md:p-12 text-center">
+              <motion.h1 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-2xl sm:text-4xl md:text-5xl font-display font-bold text-foreground mb-4 sm:mb-5"
+              >
+                Is this video <span className="text-primary">safe for kids?</span>
+              </motion.h1>
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.15 }}
+                className="text-sm sm:text-base md:text-lg text-muted-foreground mb-8 sm:mb-10 max-w-lg mx-auto"
+              >
+                Our AI analyzes content instantly to give parents and educators peace of mind.
+              </motion.p>
 
-            <motion.form 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              onSubmit={handleSearch}
-              className="relative max-w-xl mx-auto px-2 sm:px-0"
-            >
-              {/* Mobile: Stacked layout */}
-              <div className="flex flex-col sm:hidden gap-3">
-                <div className="relative group">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors w-5 h-5" />
+              <motion.form 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                onSubmit={handleSearch}
+                className="relative max-w-lg mx-auto"
+              >
+                {/* Mobile: Stacked layout */}
+                <div className="flex flex-col sm:hidden gap-3">
+                  <div className="relative group">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors w-5 h-5" />
+                    <Input
+                      type="text"
+                      placeholder="Search for a video..."
+                      className="pl-12 pr-4 h-12 text-base rounded-xl border-2 border-primary/20 bg-background shadow-sm focus-visible:ring-4 focus-visible:ring-primary/10 focus-visible:border-primary transition-all"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      data-testid="input-search"
+                    />
+                  </div>
+                  <Button 
+                    type="submit" 
+                    disabled={searchMutation.isPending}
+                    className="w-full h-12 rounded-xl font-semibold text-base"
+                    data-testid="button-search"
+                  >
+                    {searchMutation.isPending ? (
+                      <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                    ) : (
+                      <Search className="w-5 h-5 mr-2" />
+                    )}
+                    {searchMutation.isPending ? "Searching..." : "Search Videos"}
+                  </Button>
+                </div>
+                
+                {/* Desktop: Inline layout */}
+                <div className="hidden sm:block relative group">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
                   <Input
                     type="text"
-                    placeholder="Search for a video..."
-                    className="pl-12 pr-4 h-12 text-base rounded-xl border-2 border-primary/10 bg-white dark:bg-card shadow-lg focus-visible:ring-4 focus-visible:ring-primary/10 focus-visible:border-primary transition-all"
+                    placeholder="Paste a YouTube link or search keywords..."
+                    className="pl-12 pr-28 h-14 text-lg rounded-full border-2 border-primary/20 bg-background shadow-sm focus-visible:ring-4 focus-visible:ring-primary/10 focus-visible:border-primary transition-all"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    data-testid="input-search"
                   />
+                  <Button 
+                    type="submit" 
+                    disabled={searchMutation.isPending}
+                    className="absolute right-2 top-2 rounded-full h-10 px-6 font-semibold"
+                  >
+                    {searchMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      "Search"
+                    )}
+                  </Button>
                 </div>
-                <Button 
-                  type="submit" 
-                  disabled={searchMutation.isPending}
-                  className="w-full h-12 rounded-xl font-semibold text-base"
-                  data-testid="button-search"
-                >
-                  {searchMutation.isPending ? (
-                    <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                  ) : (
-                    <Search className="w-5 h-5 mr-2" />
-                  )}
-                  {searchMutation.isPending ? "Searching..." : "Search Videos"}
-                </Button>
-              </div>
-              
-              {/* Desktop: Inline layout */}
-              <div className="hidden sm:block relative group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                <Input
-                  type="text"
-                  placeholder="Paste a YouTube link or search keywords..."
-                  className="pl-12 pr-28 h-14 text-lg rounded-full border-2 border-primary/10 bg-white dark:bg-card shadow-lg focus-visible:ring-4 focus-visible:ring-primary/10 focus-visible:border-primary transition-all"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                />
-                <Button 
-                  type="submit" 
-                  disabled={searchMutation.isPending}
-                  className="absolute right-2 top-2 rounded-full h-10 px-6 font-semibold"
-                >
-                  {searchMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    "Search"
-                  )}
-                </Button>
-              </div>
-            </motion.form>
-          </div>
+              </motion.form>
+            </div>
+          </motion.div>
         </div>
 
         {/* Decorative background elements */}
