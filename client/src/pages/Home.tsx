@@ -74,11 +74,11 @@ export default function Home() {
                 {/* Mobile: Stacked layout */}
                 <div className="flex flex-col sm:hidden gap-3">
                   <div className="relative group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors w-5 h-5" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-all duration-200 w-5 h-5" />
                     <Input
                       type="text"
                       placeholder="Search for a video..."
-                      className="pl-12 pr-4 h-12 text-base rounded-xl border-2 border-primary/20 bg-background shadow-sm focus-visible:ring-4 focus-visible:ring-primary/10 focus-visible:border-primary transition-all"
+                      className="pl-12 pr-4 h-14 text-base rounded-xl border-2 border-primary/20 bg-background shadow-sm focus-visible:ring-4 focus-visible:ring-primary/20 focus-visible:border-primary focus-visible:shadow-lg focus-visible:shadow-primary/10 transition-all duration-200"
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       data-testid="input-search"
@@ -101,21 +101,21 @@ export default function Home() {
                 
                 {/* Desktop: Inline layout */}
                 <div className="hidden sm:block relative group">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-all duration-200 w-5 h-5" />
                   <Input
                     type="text"
                     placeholder="Paste a YouTube link or search keywords..."
-                    className="pl-12 pr-28 h-14 text-lg rounded-full border-2 border-primary/20 bg-background shadow-sm focus-visible:ring-4 focus-visible:ring-primary/10 focus-visible:border-primary transition-all"
+                    className="pl-14 pr-32 h-16 text-lg rounded-full border-2 border-primary/20 bg-background shadow-sm focus-visible:ring-4 focus-visible:ring-primary/20 focus-visible:border-primary focus-visible:shadow-xl focus-visible:shadow-primary/10 transition-all duration-200"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                   />
                   <Button 
                     type="submit" 
                     disabled={searchMutation.isPending}
-                    className="absolute right-2 top-2 rounded-full h-10 px-6 font-semibold"
+                    className="absolute right-2 top-2 rounded-full h-12 px-8 font-semibold text-base"
                   >
                     {searchMutation.isPending ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
                       "Search"
                     )}
