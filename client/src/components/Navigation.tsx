@@ -13,7 +13,7 @@ export function Navigation() {
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-white/20 bg-white/80 backdrop-blur-xl shadow-sm">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 group">
+        <Link href="/" className="flex items-center gap-2 group" data-testid="link-home">
           <div className="p-2 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
             <ShieldCheck className="w-6 h-6 text-primary" />
           </div>
@@ -36,6 +36,7 @@ export function Navigation() {
                     ? "bg-primary text-primary-foreground shadow-md shadow-primary/25 transform scale-105"
                     : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                 )}
+                data-testid={`link-nav-${item.href.replace("/", "") || "home"}`}
               >
                 <Icon className="w-4 h-4" />
                 <span className="hidden sm:inline">{item.label}</span>

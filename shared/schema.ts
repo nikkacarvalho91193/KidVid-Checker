@@ -25,8 +25,18 @@ export const videoAnalysis = pgTable("video_analysis", {
   tags: jsonb("tags").$type<string[]>(), // e.g., ["educational", "cartoon", "violence", "scary"]
   ageRating: text("age_rating"), // e.g., "All Ages", "7+", "13+"
   
+  // Alternative suggestions for unsafe content
+  alternativeSuggestions: jsonb("alternative_suggestions").$type<AlternativeSuggestion[]>(),
+  
   analyzedAt: timestamp("analyzed_at").defaultNow(),
 });
+
+// Alternative content suggestion type
+export interface AlternativeSuggestion {
+  searchQuery: string;
+  reason: string;
+  suggestedChannels: string[];
+}
 
 // === SCHEMAS ===
 

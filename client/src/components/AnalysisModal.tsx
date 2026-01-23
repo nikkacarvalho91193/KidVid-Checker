@@ -1,36 +1,50 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, AlertTriangle, XCircle, Shield, Baby, Tag } from "lucide-react";
-import type { VideoAnalysis } from "@shared/schema";
+import { Button } from "@/components/ui/button";
+import { CheckCircle, AlertTriangle, XCircle, Shield, Baby, Tag, Sparkles, Search, Youtube, ExternalLink } from "lucide-react";
+import type { VideoAnalysis, AlternativeSuggestion } from "@shared/schema";
 import { cn } from "@/lib/utils";
 
 interface AnalysisModalProps {
   isOpen: boolean;
   onClose: () => void;
   analysis: VideoAnalysis | null;
+  onSearchAlternative?: (query: string) => void;
 }
 
-export function AnalysisModal({ isOpen, onClose, analysis }: AnalysisModalProps) {
+export function AnalysisModal({ isOpen, onClose, analysis, onSearchAlternative }: AnalysisModalProps) {
   if (!analysis) return null;
 
   const isSafe = analysis.isAppropriate;
   const confidence = analysis.confidenceScore || 0;
-  
-  // Determine color theme based on safety and age rating
-  const getTheme = () => {
-    if (!isSafe) return "destructive";
-    if (analysis.ageRating === "13+") return "warning";
-    return "safe";
-  };
-  
-  const theme = getTheme();
+  const alternatives = analysis.alternativeSuggestions as AlternativeSuggestion[] | null;
   
   const StatusIcon = isSafe ? CheckCircle : XCircle;
-  const statusColor = isSafe ? "text-green-600 bg-green-50 border-green-200" : "text-red-600 bg-red-50 border-red-200";
+
+  const handleSearchAlternative = (query: string) => {
+    if (onSearchAlternative) {
+      onSearchAlternative(query);
+      onClose();
+    }
+  };
+
+  const openYouTubeChannel = (channelName: string) => {
+    const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(channelName)}`;
+    window.open(searchUrl, "_blank");
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl overflow-hidden border-0 p-0 sm:rounded-3xl">
+      <DialogContent 
+        className="max-w-2xl max-h-[90vh] overflow-y-auto overflow-x-hidden border-0 p-0 sm:rounded-3xl"
+        data-testid="modal-analysis"
+      >
+        <DialogHeader className="sr-only">
+          <DialogTitle>Safety Analysis Report</DialogTitle>
+          <DialogDescription>
+            {isSafe ? "This content appears safe for children" : "This content may not be appropriate for children"}
+          </DialogDescription>
+        </DialogHeader>
         {/* Header Section with Dynamic Color */}
         <div className={cn(
           "px-6 py-8 relative overflow-hidden",
@@ -40,22 +54,28 @@ export function AnalysisModal({ isOpen, onClose, analysis }: AnalysisModalProps)
           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_1px_1px,#fff_1px,transparent_0)] bg-[length:20px_20px]" />
           
           <div className="relative z-10 text-white">
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-3 mb-4 flex-wrap">
               <Badge className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm px-3 py-1">
                 Safety Analysis Report
               </Badge>
-              <Badge className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm px-3 py-1">
+              <Badge 
+                className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm px-3 py-1"
+                data-testid="badge-confidence"
+              >
                 {confidence}% Confidence
               </Badge>
             </div>
             
-            <h2 className="text-3xl font-display font-bold mb-2 flex items-center gap-3">
+            <h2 
+              className="text-3xl font-display font-bold mb-2 flex items-center gap-3 flex-wrap"
+              data-testid="text-safety-status"
+            >
               {isSafe ? "Content Appears Safe" : "Content May Be Unsafe"}
               <div className="bg-white/20 p-2 rounded-full backdrop-blur-sm">
                 <StatusIcon className="w-8 h-8" />
               </div>
             </h2>
-            <p className="text-white/90 text-lg">
+            <p className="text-white/90 text-lg" data-testid="text-video-title">
               {analysis.title}
             </p>
           </div>
@@ -69,7 +89,7 @@ export function AnalysisModal({ isOpen, onClose, analysis }: AnalysisModalProps)
               <Shield className="w-4 h-4" />
               Safety Reasoning
             </h3>
-            <p className="text-foreground leading-relaxed">
+            <p className="text-foreground leading-relaxed" data-testid="text-reasoning">
               {analysis.reasoning}
             </p>
           </div>
@@ -81,7 +101,7 @@ export function AnalysisModal({ isOpen, onClose, analysis }: AnalysisModalProps)
                 <Baby className="w-4 h-4" />
                 Age Rating
               </h4>
-              <div className="text-2xl font-display font-bold text-foreground">
+              <div className="text-2xl font-display font-bold text-foreground" data-testid="text-age-rating">
                 {analysis.ageRating || "Not Rated"}
               </div>
             </div>
@@ -92,15 +112,83 @@ export function AnalysisModal({ isOpen, onClose, analysis }: AnalysisModalProps)
                 <Tag className="w-4 h-4" />
                 Detected Themes
               </h4>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2" data-testid="container-tags">
                 {analysis.tags?.map((tag, i) => (
-                  <Badge key={i} variant="outline" className="bg-white">
+                  <Badge key={i} variant="outline" className="bg-white dark:bg-secondary" data-testid={`badge-tag-${i}`}>
                     {tag}
                   </Badge>
                 )) || <span className="text-sm text-muted-foreground">No tags detected</span>}
               </div>
             </div>
           </div>
+
+          {/* Alternative Suggestions Section - Only shown when content is unsafe */}
+          {!isSafe && alternatives && alternatives.length > 0 && (
+            <div 
+              className="bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/20 rounded-2xl p-5"
+              data-testid="container-alternatives"
+            >
+              <h3 className="text-lg font-display font-bold text-foreground mb-4 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary" />
+                Kid-Friendly Alternatives
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Based on the video's topic, here are some safe alternatives for children:
+              </p>
+              
+              <div className="space-y-4">
+                {alternatives.map((alt, index) => (
+                  <div 
+                    key={index} 
+                    className="bg-card rounded-xl p-4 border shadow-sm"
+                    data-testid={`card-alternative-${index}`}
+                  >
+                    <div className="flex items-start justify-between gap-4 mb-3">
+                      <div className="flex-1">
+                        <p className="text-sm text-muted-foreground mb-1">{alt.reason}</p>
+                        <p className="font-semibold text-foreground flex items-center gap-2">
+                          <Search className="w-4 h-4 text-primary" />
+                          Search: "{alt.searchQuery}"
+                        </p>
+                      </div>
+                      {onSearchAlternative && (
+                        <Button 
+                          size="sm" 
+                          onClick={() => handleSearchAlternative(alt.searchQuery)}
+                          data-testid={`button-search-alternative-${index}`}
+                        >
+                          Search
+                        </Button>
+                      )}
+                    </div>
+                    
+                    {alt.suggestedChannels && alt.suggestedChannels.length > 0 && (
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                          <Youtube className="w-3 h-3" />
+                          Recommended kid-friendly channels:
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {alt.suggestedChannels.map((channel, channelIndex) => (
+                            <Badge 
+                              key={channelIndex} 
+                              variant="secondary"
+                              className="cursor-pointer hover-elevate gap-1"
+                              onClick={() => openYouTubeChannel(channel)}
+                              data-testid={`badge-channel-${index}-${channelIndex}`}
+                            >
+                              {channel}
+                              <ExternalLink className="w-3 h-3" />
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

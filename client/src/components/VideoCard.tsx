@@ -73,6 +73,7 @@ export function VideoCard({
               ? "bg-muted text-muted-foreground cursor-not-allowed"
               : "bg-primary/10 text-primary hover:bg-primary hover:text-white hover:shadow-lg hover:shadow-primary/25"
           )}
+          data-testid={`button-analyze-${id}`}
         >
           {isAnalyzing ? (
             <>

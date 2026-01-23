@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import type { AlternativeSuggestion } from "@shared/schema";
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
@@ -11,6 +12,7 @@ export interface AnalysisResult {
   reasoning: string;
   tags: string[];
   ageRating: string;
+  alternativeSuggestions?: AlternativeSuggestion[];
 }
 
 export async function analyzeVideoContent(
@@ -27,6 +29,7 @@ Analyze the following video information and determine:
 3. What age rating would you assign? (All Ages, 7+, 10+, 13+, Not for Children)
 4. What content tags apply? (e.g., educational, cartoon, music, gaming, scary, violence, language, mature themes)
 5. A brief explanation of your reasoning.
+6. If the content is NOT appropriate for children, suggest 2-3 child-safe alternative search queries based on the video's topic. Include known kid-friendly YouTube channels that cover similar topics.
 
 Video Information:
 - Title: ${title}
@@ -34,13 +37,27 @@ Video Information:
 - Description: ${description || "No description available"}
 ${tags && tags.length > 0 ? `- Tags: ${tags.join(", ")}` : ""}
 
+Known kid-friendly channels to consider for alternatives:
+- Educational: "National Geographic Kids", "SciShow Kids", "Crash Course Kids", "PBS Kids", "Khan Academy Kids"
+- Entertainment: "Ryan's World", "Blippi", "CoComelon", "Pinkfong", "Super Simple Songs"
+- Gaming: "Stampy", "DanTDM (family-friendly content)", "PrestonPlayz"
+- Science/Nature: "Wild Kratts", "The Brain Scoop Kids", "SmarterEveryDay"
+- Stories/Reading: "Storyline Online", "Brightly Storytime"
+
 Respond in JSON format:
 {
   "isAppropriate": boolean,
   "confidenceScore": number (0-100),
   "ageRating": string,
   "tags": string[],
-  "reasoning": string
+  "reasoning": string,
+  "alternativeSuggestions": [
+    {
+      "searchQuery": "kid-friendly search term related to the topic",
+      "reason": "why this is a good alternative",
+      "suggestedChannels": ["Channel Name 1", "Channel Name 2"]
+    }
+  ] // Only include if isAppropriate is false
 }`;
 
   const response = await openai.chat.completions.create({
@@ -72,6 +89,9 @@ Respond in JSON format:
       reasoning: result.reasoning ?? "Analysis completed",
       tags: Array.isArray(result.tags) ? result.tags : [],
       ageRating: result.ageRating ?? "Unknown",
+      alternativeSuggestions: result.isAppropriate === false && Array.isArray(result.alternativeSuggestions) 
+        ? result.alternativeSuggestions 
+        : undefined,
     };
   } catch {
     throw new Error("Failed to parse AI response");

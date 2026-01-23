@@ -31,6 +31,11 @@ export default function Home() {
     );
   };
 
+  const handleSearchAlternative = (alternativeQuery: string) => {
+    setQuery(alternativeQuery);
+    searchMutation.mutate({ query: alternativeQuery, maxResults: 12 });
+  };
+
   return (
     <div className="min-h-screen pb-20">
       {/* Hero Section */}
@@ -69,11 +74,13 @@ export default function Home() {
                   className="pl-12 pr-4 h-14 text-lg rounded-full border-2 border-primary/10 bg-white shadow-lg focus-visible:ring-4 focus-visible:ring-primary/10 focus-visible:border-primary transition-all"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
+                  data-testid="input-search"
                 />
                 <Button 
                   type="submit" 
                   disabled={searchMutation.isPending}
                   className="absolute right-2 top-2 rounded-full h-10 px-6 font-semibold"
+                  data-testid="button-search"
                 >
                   {searchMutation.isPending ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -158,6 +165,7 @@ export default function Home() {
         isOpen={!!selectedAnalysis}
         onClose={() => setSelectedAnalysis(null)}
         analysis={selectedAnalysis}
+        onSearchAlternative={handleSearchAlternative}
       />
     </div>
   );
