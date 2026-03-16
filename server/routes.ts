@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { searchRequestSchema, analyzeRequestSchema, channelSearchRequestSchema, channelAnalyzeRequestSchema } from "@shared/schema";
 import { searchYouTube, getVideoDetails, searchChannels, getChannelVideos } from "./services/youtube";
-import { analyzeVideoContent, synthesizeChannelAnalysis } from "./services/analyzer";
+import { analyzeVideoContent, analyzeChannel } from "./services/analyzer";
 import { z } from "zod";
 
 export async function registerRoutes(
@@ -102,9 +102,11 @@ export async function registerRoutes(
     try {
       const input = channelAnalyzeRequestSchema.parse(req.body);
 
-      const existing = await storage.getChannelAnalysisByChannelId(input.channelId);
-      if (existing) {
-        return res.json(existing);
+      if (!input.forceRefresh) {
+        const existing = await storage.getChannelAnalysisByChannelId(input.channelId);
+        if (existing) {
+          return res.json(existing);
+        }
       }
 
       const videos = await getChannelVideos(input.channelId, 8);
@@ -131,43 +133,12 @@ export async function registerRoutes(
       } catch {
       }
 
-      const videoAnalysisResults = [];
-      for (const video of videos) {
-        try {
-          const result = await analyzeVideoContent(
-            video.snippet.title,
-            video.snippet.description,
-            video.snippet.channelTitle,
-            video.snippet.tags
-          );
-          videoAnalysisResults.push({
-            title: video.snippet.title,
-            youtubeId: video.id,
-            isAppropriate: result.isAppropriate,
-            confidenceScore: result.confidenceScore,
-            ageRating: result.ageRating,
-            reasoning: result.reasoning,
-            tags: result.tags,
-            overstimulationRating: result.overstimulationAnalysis?.rating || "low",
-          });
-        } catch (err) {
-          console.error(`Failed to analyze video ${video.id}:`, err);
-        }
-      }
-
-      if (videoAnalysisResults.length === 0) {
-        return res.status(500).json({ message: "Failed to analyze any videos from this channel" });
-      }
-
-      const synthesis = await synthesizeChannelAnalysis(
+      const analysisResult = await analyzeChannel(
         videos[0].snippet.channelTitle,
-        videoAnalysisResults
+        videos.map(v => ({ id: v.id, snippet: v.snippet }))
       );
 
-      const safeCount = videoAnalysisResults.filter(v => v.isAppropriate).length;
-      const flaggedCount = videoAnalysisResults.length - safeCount;
-
-      const breakdown = videoAnalysisResults.map(v => ({
+      const breakdown = analysisResult.videoBreakdown.map(v => ({
         title: v.title,
         youtubeId: v.youtubeId,
         isAppropriate: v.isAppropriate,
@@ -181,13 +152,13 @@ export async function registerRoutes(
         channelName: videos[0].snippet.channelTitle,
         thumbnailUrl: channelThumbnailUrl,
         subscriberCount: channelSubscriberCount,
-        overallGrade: synthesis.overallGrade,
-        safeCount,
-        flaggedCount,
-        totalAnalyzed: videoAnalysisResults.length,
-        overallReasoning: synthesis.overallReasoning,
-        overstimulationRating: synthesis.overstimulationRating,
-        topConcerns: synthesis.topConcerns,
+        overallGrade: analysisResult.overallGrade,
+        safeCount: analysisResult.safeCount,
+        flaggedCount: analysisResult.flaggedCount,
+        totalAnalyzed: analysisResult.totalAnalyzed,
+        overallReasoning: analysisResult.overallReasoning,
+        overstimulationRating: analysisResult.overstimulationRating,
+        topConcerns: analysisResult.topConcerns,
         videoBreakdown: breakdown,
       });
 

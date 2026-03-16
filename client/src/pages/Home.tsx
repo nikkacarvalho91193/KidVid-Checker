@@ -21,6 +21,7 @@ export default function Home() {
   const [searchMode, setSearchMode] = useState<"video" | "channel">("video");
   const [selectedAnalysis, setSelectedAnalysis] = useState<VideoAnalysis | null>(null);
   const [selectedChannelAnalysis, setSelectedChannelAnalysis] = useState<ChannelAnalysis | null>(null);
+  const [channelGrades, setChannelGrades] = useState<Record<string, string>>({});
   
   const searchMutation = useSearchVideos();
   const analyzeMutation = useAnalyzeVideo();
@@ -51,7 +52,13 @@ export default function Home() {
     channelAnalyzeMutation.mutate(
       { channelId },
       {
-        onSuccess: (data) => setSelectedChannelAnalysis(data as ChannelAnalysis),
+        onSuccess: (data) => {
+          const result = data as ChannelAnalysis;
+          setSelectedChannelAnalysis(result);
+          if (result.overallGrade) {
+            setChannelGrades(prev => ({ ...prev, [channelId]: result.overallGrade! }));
+          }
+        },
         onError: () => {},
       }
     );
@@ -358,6 +365,7 @@ export default function Home() {
                   {...channel}
                   onAnalyze={handleAnalyzeChannel}
                   isAnalyzing={channelAnalyzeMutation.isPending && channelAnalyzeMutation.variables?.channelId === channel.channelId}
+                  grade={channelGrades[channel.channelId] || null}
                 />
               ))}
             </div>

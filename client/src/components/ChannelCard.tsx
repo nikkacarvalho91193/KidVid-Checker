@@ -21,6 +21,14 @@ function formatSubscriberCount(count: string): string {
   return String(num);
 }
 
+const gradeColors: Record<string, { bg: string; text: string; border: string }> = {
+  A: { bg: "bg-green-100 dark:bg-green-900/40", text: "text-green-700 dark:text-green-300", border: "border-green-300 dark:border-green-700" },
+  B: { bg: "bg-blue-100 dark:bg-blue-900/40", text: "text-blue-700 dark:text-blue-300", border: "border-blue-300 dark:border-blue-700" },
+  C: { bg: "bg-amber-100 dark:bg-amber-900/40", text: "text-amber-700 dark:text-amber-300", border: "border-amber-300 dark:border-amber-700" },
+  D: { bg: "bg-orange-100 dark:bg-orange-900/40", text: "text-orange-700 dark:text-orange-300", border: "border-orange-300 dark:border-orange-700" },
+  F: { bg: "bg-red-100 dark:bg-red-900/40", text: "text-red-700 dark:text-red-300", border: "border-red-300 dark:border-red-700" },
+};
+
 interface ChannelCardProps {
   channelId: string;
   title: string;
@@ -29,6 +37,7 @@ interface ChannelCardProps {
   subscriberCount: string;
   onAnalyze: (channelId: string) => void;
   isAnalyzing?: boolean;
+  grade?: string | null;
 }
 
 export function ChannelCard({
@@ -39,6 +48,7 @@ export function ChannelCard({
   subscriberCount,
   onAnalyze,
   isAnalyzing = false,
+  grade,
 }: ChannelCardProps) {
   const [messageIndex, setMessageIndex] = useState(0);
 
@@ -76,6 +86,19 @@ export function ChannelCard({
           )}
           loading="lazy"
         />
+
+        {grade && !isAnalyzing && (
+          <div className="absolute top-2 right-2 z-10" data-testid={`grade-badge-${channelId}`}>
+            <div className={cn(
+              "w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg border-2 shadow-md",
+              gradeColors[grade]?.bg || "bg-gray-100",
+              gradeColors[grade]?.text || "text-gray-700",
+              gradeColors[grade]?.border || "border-gray-300"
+            )}>
+              {grade}
+            </div>
+          </div>
+        )}
 
         <AnimatePresence>
           {isAnalyzing && (

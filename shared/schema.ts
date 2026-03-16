@@ -112,6 +112,7 @@ export type ChannelSearchRequest = z.infer<typeof channelSearchRequestSchema>;
 
 export const channelAnalyzeRequestSchema = z.object({
   channelId: z.string().min(1, "Channel ID is required"),
+  forceRefresh: z.boolean().optional().default(false),
 });
 export type ChannelAnalyzeRequest = z.infer<typeof channelAnalyzeRequestSchema>;
 

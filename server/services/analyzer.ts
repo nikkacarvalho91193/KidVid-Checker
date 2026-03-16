@@ -132,6 +132,72 @@ Respond in JSON format:
   }
 }
 
+export interface ChannelVideoAnalysisResult {
+  title: string;
+  youtubeId: string;
+  isAppropriate: boolean;
+  confidenceScore: number;
+  ageRating: string;
+  reasoning: string;
+  tags: string[];
+  overstimulationRating: string;
+}
+
+export interface ChannelAnalysisResult {
+  overallGrade: string;
+  overallReasoning: string;
+  overstimulationRating: string;
+  topConcerns: string[];
+  safeCount: number;
+  flaggedCount: number;
+  totalAnalyzed: number;
+  videoBreakdown: ChannelVideoAnalysisResult[];
+}
+
+export async function analyzeChannel(
+  channelName: string,
+  videos: Array<{ id: string; snippet: { title: string; description: string; channelTitle: string; tags?: string[] } }>
+): Promise<ChannelAnalysisResult> {
+  const videoResults: ChannelVideoAnalysisResult[] = [];
+  for (const video of videos) {
+    try {
+      const result = await analyzeVideoContent(
+        video.snippet.title,
+        video.snippet.description,
+        video.snippet.channelTitle,
+        video.snippet.tags
+      );
+      videoResults.push({
+        title: video.snippet.title,
+        youtubeId: video.id,
+        isAppropriate: result.isAppropriate,
+        confidenceScore: result.confidenceScore,
+        ageRating: result.ageRating,
+        reasoning: result.reasoning,
+        tags: result.tags,
+        overstimulationRating: result.overstimulationAnalysis?.rating || "low",
+      });
+    } catch (err) {
+      console.error(`Failed to analyze video ${video.id}:`, err);
+    }
+  }
+
+  if (videoResults.length === 0) {
+    throw new Error("Failed to analyze any videos from this channel");
+  }
+
+  const synthesis = await synthesizeChannelAnalysis(channelName, videoResults);
+  const safeCount = videoResults.filter(v => v.isAppropriate).length;
+
+  return {
+    ...synthesis,
+    safeCount,
+    flaggedCount: videoResults.length - safeCount,
+    totalAnalyzed: videoResults.length,
+    videoBreakdown: videoResults,
+  };
+}
+
 export interface ChannelSynthesisResult {
   overallGrade: string;
   overallReasoning: string;
