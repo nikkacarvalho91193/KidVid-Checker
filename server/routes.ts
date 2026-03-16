@@ -3,7 +3,7 @@ import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { searchRequestSchema, analyzeRequestSchema, channelSearchRequestSchema, channelAnalyzeRequestSchema } from "@shared/schema";
-import { searchYouTube, getVideoDetails, searchChannels, getChannelVideos } from "./services/youtube";
+import { searchYouTube, getVideoDetails, searchChannels, getChannelVideos, getChannelMetadata } from "./services/youtube";
 import { analyzeVideoContent, analyzeChannel } from "./services/analyzer";
 import { z } from "zod";
 
@@ -114,25 +114,7 @@ export async function registerRoutes(
         return res.status(400).json({ message: "No videos found for this channel" });
       }
 
-      let channelThumbnailUrl: string | null = null;
-      let channelSubscriberCount: string | null = null;
-      try {
-        const channelInfoParams = new URLSearchParams({
-          part: "snippet,statistics",
-          id: input.channelId,
-          key: process.env.YOUTUBE_API_KEY || "",
-        });
-        const channelInfoRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?${channelInfoParams}`);
-        if (channelInfoRes.ok) {
-          const channelInfoData = await channelInfoRes.json();
-          if (channelInfoData.items && channelInfoData.items.length > 0) {
-            channelThumbnailUrl = channelInfoData.items[0].snippet?.thumbnails?.medium?.url || channelInfoData.items[0].snippet?.thumbnails?.default?.url || null;
-            channelSubscriberCount = channelInfoData.items[0].statistics?.subscriberCount || null;
-          }
-        }
-      } catch (metaErr) {
-        console.warn("Failed to fetch channel metadata:", metaErr);
-      }
+      const channelMeta = await getChannelMetadata(input.channelId);
 
       const analysisResult = await analyzeChannel(
         videos[0].snippet.channelTitle,
@@ -151,8 +133,8 @@ export async function registerRoutes(
       const channelResult = await storage.createChannelAnalysis({
         channelId: input.channelId,
         channelName: videos[0].snippet.channelTitle,
-        thumbnailUrl: channelThumbnailUrl,
-        subscriberCount: channelSubscriberCount,
+        thumbnailUrl: channelMeta.thumbnailUrl,
+        subscriberCount: channelMeta.subscriberCount,
         overallGrade: analysisResult.overallGrade,
         safeCount: analysisResult.safeCount,
         flaggedCount: analysisResult.flaggedCount,

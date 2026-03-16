@@ -193,6 +193,40 @@ export async function searchChannels(query: string, maxResults: number = 6): Pro
   }));
 }
 
+export async function getChannelMetadata(channelId: string): Promise<{ thumbnailUrl: string | null; subscriberCount: string | null }> {
+  if (!YOUTUBE_API_KEY) {
+    return { thumbnailUrl: null, subscriberCount: null };
+  }
+
+  try {
+    const params = new URLSearchParams({
+      part: "snippet,statistics",
+      id: channelId,
+      key: YOUTUBE_API_KEY,
+    });
+
+    const response = await fetch(`${YOUTUBE_API_BASE}/channels?${params}`);
+    if (!response.ok) {
+      console.warn("Failed to fetch channel metadata:", await response.text());
+      return { thumbnailUrl: null, subscriberCount: null };
+    }
+
+    const data = await response.json();
+    if (!data.items || data.items.length === 0) {
+      return { thumbnailUrl: null, subscriberCount: null };
+    }
+
+    const item = data.items[0];
+    return {
+      thumbnailUrl: item.snippet?.thumbnails?.medium?.url || item.snippet?.thumbnails?.default?.url || null,
+      subscriberCount: item.statistics?.subscriberCount || null,
+    };
+  } catch (err) {
+    console.warn("Failed to fetch channel metadata:", err);
+    return { thumbnailUrl: null, subscriberCount: null };
+  }
+}
+
 export async function getChannelVideos(channelId: string, maxResults: number = 8): Promise<YouTubeVideoResponse["items"]> {
   if (!YOUTUBE_API_KEY) {
     throw new Error("YOUTUBE_API_KEY is not configured");
