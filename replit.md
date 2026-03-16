@@ -37,6 +37,7 @@ The server uses a service-oriented pattern with dedicated services for YouTube A
 Key tables:
 - `searches` - Stores search queries
 - `video_analysis` - Stores analyzed video results with safety ratings, tags, and alternative suggestions
+- `channel_analysis` - Stores channel-level safety assessments with overall grade, video breakdown, overstimulation rating, and top concerns
 
 ### External Service Integration
 - **YouTube Data API v3**: Video search and metadata retrieval

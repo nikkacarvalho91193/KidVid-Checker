@@ -34,6 +34,32 @@ export const videoAnalysis = pgTable("video_analysis", {
   analyzedAt: timestamp("analyzed_at").defaultNow(),
 });
 
+export const channelAnalysis = pgTable("channel_analysis", {
+  id: serial("id").primaryKey(),
+  channelId: text("channel_id").notNull(),
+  channelName: text("channel_name").notNull(),
+  thumbnailUrl: text("thumbnail_url"),
+  subscriberCount: text("subscriber_count"),
+  overallGrade: text("overall_grade"),
+  safeCount: integer("safe_count"),
+  flaggedCount: integer("flagged_count"),
+  totalAnalyzed: integer("total_analyzed"),
+  overallReasoning: text("overall_reasoning"),
+  overstimulationRating: text("overstimulation_rating"),
+  topConcerns: jsonb("top_concerns").$type<string[]>(),
+  videoBreakdown: jsonb("video_breakdown").$type<ChannelVideoBreakdown[]>(),
+  analyzedAt: timestamp("analyzed_at").defaultNow(),
+});
+
+export interface ChannelVideoBreakdown {
+  title: string;
+  youtubeId: string;
+  isAppropriate: boolean;
+  ageRating: string;
+  overstimulationRating: string;
+  confidenceScore: number;
+}
+
 // Alternative content suggestion type
 export interface AlternativeSuggestion {
   searchQuery: string;
@@ -53,6 +79,7 @@ export interface OverstimulationAnalysis {
 
 export const insertSearchSchema = createInsertSchema(searches).omit({ id: true, createdAt: true });
 export const insertVideoAnalysisSchema = createInsertSchema(videoAnalysis).omit({ id: true, analyzedAt: true });
+export const insertChannelAnalysisSchema = createInsertSchema(channelAnalysis).omit({ id: true, analyzedAt: true });
 
 // === TYPES ===
 
@@ -61,6 +88,9 @@ export type InsertSearch = z.infer<typeof insertSearchSchema>;
 
 export type VideoAnalysis = typeof videoAnalysis.$inferSelect;
 export type InsertVideoAnalysis = z.infer<typeof insertVideoAnalysisSchema>;
+
+export type ChannelAnalysis = typeof channelAnalysis.$inferSelect;
+export type InsertChannelAnalysis = z.infer<typeof insertChannelAnalysisSchema>;
 
 // Request types
 export const searchRequestSchema = z.object({
@@ -74,6 +104,17 @@ export const analyzeRequestSchema = z.object({
 });
 export type AnalyzeRequest = z.infer<typeof analyzeRequestSchema>;
 
+export const channelSearchRequestSchema = z.object({
+  query: z.string().min(1, "Channel search query is required"),
+  maxResults: z.number().optional().default(6),
+});
+export type ChannelSearchRequest = z.infer<typeof channelSearchRequestSchema>;
+
+export const channelAnalyzeRequestSchema = z.object({
+  channelId: z.string().min(1, "Channel ID is required"),
+});
+export type ChannelAnalyzeRequest = z.infer<typeof channelAnalyzeRequestSchema>;
+
 // Response types
 export interface YouTubeSearchResult {
   id: string;
@@ -85,3 +126,11 @@ export interface YouTubeSearchResult {
 }
 
 export type SearchResponse = YouTubeSearchResult[];
+
+export interface YouTubeChannelResult {
+  channelId: string;
+  title: string;
+  description: string;
+  thumbnailUrl: string;
+  subscriberCount: string;
+}

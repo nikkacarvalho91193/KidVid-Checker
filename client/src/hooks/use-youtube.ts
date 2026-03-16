@@ -57,6 +57,42 @@ export function useAnalyzeVideo() {
   });
 }
 
+// === CHANNEL SEARCH ===
+export function useSearchChannels() {
+  return useMutation({
+    mutationFn: async (request: { query: string; maxResults?: number }) => {
+      const validated = api.channel.search.input.parse(request);
+      return fetchWithValidation(
+        api.channel.search.path,
+        api.channel.search.responses[200],
+        {
+          method: api.channel.search.method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(validated),
+        }
+      );
+    },
+  });
+}
+
+// === CHANNEL ANALYZE ===
+export function useAnalyzeChannel() {
+  return useMutation({
+    mutationFn: async (request: { channelId: string }) => {
+      const validated = api.channel.analyze.input.parse(request);
+      return fetchWithValidation(
+        api.channel.analyze.path,
+        api.channel.analyze.responses[200],
+        {
+          method: api.channel.analyze.method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(validated),
+        }
+      );
+    },
+  });
+}
+
 // === HISTORY ===
 export function useHistory() {
   return useQuery({

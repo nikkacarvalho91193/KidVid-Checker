@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { insertVideoAnalysisSchema, searchRequestSchema, analyzeRequestSchema, videoAnalysis } from './schema';
+import { insertVideoAnalysisSchema, searchRequestSchema, analyzeRequestSchema, videoAnalysis, channelSearchRequestSchema, channelAnalyzeRequestSchema, channelAnalysis } from './schema';
 
 export const errorSchemas = {
   validation: z.object({
@@ -39,6 +39,34 @@ export const api = {
       input: analyzeRequestSchema,
       responses: {
         200: z.custom<typeof videoAnalysis.$inferSelect>(),
+        400: errorSchemas.validation,
+        500: errorSchemas.internal,
+      },
+    },
+  },
+  channel: {
+    search: {
+      method: 'POST' as const,
+      path: '/api/channel/search',
+      input: channelSearchRequestSchema,
+      responses: {
+        200: z.array(z.object({
+          channelId: z.string(),
+          title: z.string(),
+          description: z.string(),
+          thumbnailUrl: z.string(),
+          subscriberCount: z.string(),
+        })),
+        400: errorSchemas.validation,
+        500: errorSchemas.internal,
+      },
+    },
+    analyze: {
+      method: 'POST' as const,
+      path: '/api/channel/analyze',
+      input: channelAnalyzeRequestSchema,
+      responses: {
+        200: z.custom<typeof channelAnalysis.$inferSelect>(),
         400: errorSchemas.validation,
         500: errorSchemas.internal,
       },

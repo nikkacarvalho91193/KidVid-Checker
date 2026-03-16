@@ -1,13 +1,16 @@
 import { useState } from "react";
-import { useSearchVideos, useAnalyzeVideo } from "@/hooks/use-youtube";
+import { useSearchVideos, useAnalyzeVideo, useSearchChannels, useAnalyzeChannel } from "@/hooks/use-youtube";
 import { VideoCard } from "@/components/VideoCard";
+import { ChannelCard } from "@/components/ChannelCard";
 import { AnalysisModal } from "@/components/AnalysisModal";
+import { ChannelAnalysisModal } from "@/components/ChannelAnalysisModal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, Sparkles, Loader2, AlertCircle, Info, Brain, Eye, ShieldAlert, Heart, Shield, CheckCircle2, Zap } from "lucide-react";
+import { Search, Sparkles, Loader2, AlertCircle, Info, Brain, Eye, ShieldAlert, Heart, Shield, CheckCircle2, Zap, Video, Tv } from "lucide-react";
 import { motion } from "framer-motion";
-import type { VideoAnalysis } from "@shared/schema";
+import { cn } from "@/lib/utils";
+import type { VideoAnalysis, ChannelAnalysis } from "@shared/schema";
 
 import childWatchingTvImg from "@assets/child-watching-tv.jpg";
 import kidsTabletImg from "@assets/kids-tablet.jpg";
@@ -15,15 +18,23 @@ import familyScreenImg from "@assets/family-screen.jpg";
 
 export default function Home() {
   const [query, setQuery] = useState("");
+  const [searchMode, setSearchMode] = useState<"video" | "channel">("video");
   const [selectedAnalysis, setSelectedAnalysis] = useState<VideoAnalysis | null>(null);
+  const [selectedChannelAnalysis, setSelectedChannelAnalysis] = useState<ChannelAnalysis | null>(null);
   
   const searchMutation = useSearchVideos();
   const analyzeMutation = useAnalyzeVideo();
+  const channelSearchMutation = useSearchChannels();
+  const channelAnalyzeMutation = useAnalyzeChannel();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      searchMutation.mutate({ query, maxResults: 12 });
+      if (searchMode === "video") {
+        searchMutation.mutate({ query, maxResults: 12 });
+      } else {
+        channelSearchMutation.mutate({ query, maxResults: 6 });
+      }
     }
   };
 
@@ -36,10 +47,23 @@ export default function Home() {
     );
   };
 
+  const handleAnalyzeChannel = (channelId: string) => {
+    channelAnalyzeMutation.mutate(
+      { channelId },
+      {
+        onSuccess: (data) => setSelectedChannelAnalysis(data as ChannelAnalysis),
+        onError: () => {},
+      }
+    );
+  };
+
   const handleSearchAlternative = (alternativeQuery: string) => {
     setQuery(alternativeQuery);
+    setSearchMode("video");
     searchMutation.mutate({ query: alternativeQuery, maxResults: 12 });
   };
+
+  const isSearching = searchMode === "video" ? searchMutation.isPending : channelSearchMutation.isPending;
 
   return (
     <div className="min-h-screen pb-20">
@@ -142,10 +166,46 @@ export default function Home() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.15 }}
-                  className="text-sm sm:text-base md:text-lg text-muted-foreground mb-8 sm:mb-10 max-w-lg mx-auto"
+                  className="text-sm sm:text-base md:text-lg text-muted-foreground mb-6 sm:mb-8 max-w-lg mx-auto"
                 >
                   Our AI analyzes YouTube content instantly to give parents and educators peace of mind.
                 </motion.p>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.18 }}
+                  className="flex items-center justify-center gap-1 p-1 bg-secondary/50 rounded-full max-w-xs mx-auto mb-6 sm:mb-8"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setSearchMode("video")}
+                    className={cn(
+                      "flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
+                      searchMode === "video"
+                        ? "bg-primary text-white shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                    data-testid="tab-video-search"
+                  >
+                    <Video className="w-3.5 h-3.5" />
+                    Video Search
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSearchMode("channel")}
+                    className={cn(
+                      "flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
+                      searchMode === "channel"
+                        ? "bg-primary text-white shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                    data-testid="tab-channel-scan"
+                  >
+                    <Tv className="w-3.5 h-3.5" />
+                    Channel Scan
+                  </button>
+                </motion.div>
 
               <motion.form 
                 initial={{ opacity: 0, y: 10 }}
@@ -160,7 +220,7 @@ export default function Home() {
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-all duration-200 w-5 h-5" />
                     <Input
                       type="text"
-                      placeholder="Search for a video..."
+                      placeholder={searchMode === "video" ? "Search for a video..." : "Search for a channel..."}
                       className="pl-12 pr-4 h-14 text-base rounded-xl border-2 border-primary/20 bg-background shadow-sm focus-visible:ring-4 focus-visible:ring-primary/20 focus-visible:border-primary focus-visible:shadow-lg focus-visible:shadow-primary/10 transition-all duration-200"
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
@@ -169,16 +229,16 @@ export default function Home() {
                   </div>
                   <Button 
                     type="submit" 
-                    disabled={searchMutation.isPending}
+                    disabled={isSearching}
                     className="w-full h-12 rounded-xl font-semibold text-base bg-primary hover:bg-primary/90 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/25 active:scale-[0.98] transition-all duration-200"
                     data-testid="button-search"
                   >
-                    {searchMutation.isPending ? (
+                    {isSearching ? (
                       <Loader2 className="w-5 h-5 animate-spin mr-2" />
                     ) : (
                       <Sparkles className="w-5 h-5 mr-2" />
                     )}
-                    {searchMutation.isPending ? "Searching..." : "Search"}
+                    {isSearching ? "Searching..." : "Search"}
                   </Button>
                 </div>
                 
@@ -187,22 +247,22 @@ export default function Home() {
                   <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-all duration-200 w-5 h-5" />
                   <Input
                     type="text"
-                    placeholder="Paste a YouTube link or search keywords..."
+                    placeholder={searchMode === "video" ? "Paste a YouTube link or search keywords..." : "Search for a YouTube channel..."}
                     className="pl-14 pr-32 h-16 text-lg rounded-full border-2 border-primary/20 bg-background shadow-sm focus-visible:ring-4 focus-visible:ring-primary/20 focus-visible:border-primary focus-visible:shadow-xl focus-visible:shadow-primary/10 transition-all duration-200"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                   />
                   <Button 
                     type="submit" 
-                    disabled={searchMutation.isPending}
+                    disabled={isSearching}
                     className="absolute right-2 top-2 rounded-full h-12 px-6 font-semibold text-base bg-primary hover:bg-primary/90 hover:scale-105 hover:shadow-lg hover:shadow-primary/25 active:scale-[0.98] transition-all duration-200"
                   >
-                    {searchMutation.isPending ? (
+                    {isSearching ? (
                       <Loader2 className="w-5 h-5 animate-spin mr-2" />
                     ) : (
                       <Sparkles className="w-4 h-4 mr-2" />
                     )}
-                    {searchMutation.isPending ? "Searching..." : "Search"}
+                    {isSearching ? "Searching..." : "Search"}
                   </Button>
                 </div>
               </motion.form>
@@ -242,14 +302,21 @@ export default function Home() {
 
       {/* Results Section */}
       <div className="container mx-auto px-3 sm:px-4 mt-6 sm:mt-8">
-        {searchMutation.isError && (
+        {(searchMutation.isError || channelSearchMutation.isError) && (
           <div className="max-w-xl mx-auto p-3 sm:p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive flex items-center gap-3 text-sm sm:text-base">
             <AlertCircle className="w-5 h-5 flex-shrink-0" />
             <p>Something went wrong. Please try again later.</p>
           </div>
         )}
 
-        {searchMutation.isSuccess && (
+        {channelAnalyzeMutation.isError && (
+          <div className="max-w-xl mx-auto mb-4 p-3 sm:p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive flex items-center gap-3 text-sm sm:text-base" data-testid="error-channel-analysis">
+            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <p>Channel analysis failed. This can take a while — please try again.</p>
+          </div>
+        )}
+
+        {searchMode === "video" && searchMutation.isSuccess && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -257,7 +324,7 @@ export default function Home() {
           >
             <div className="flex items-center gap-2 mb-4 sm:mb-6">
               <Sparkles className="w-5 h-5 text-primary" />
-              <h2 className="text-xl sm:text-2xl font-display font-bold">Search Results</h2>
+              <h2 className="text-xl sm:text-2xl font-display font-bold">Video Results</h2>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
@@ -273,8 +340,32 @@ export default function Home() {
           </motion.div>
         )}
 
+        {searchMode === "channel" && channelSearchMutation.isSuccess && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-4 sm:space-y-6"
+          >
+            <div className="flex items-center gap-2 mb-4 sm:mb-6">
+              <Tv className="w-5 h-5 text-primary" />
+              <h2 className="text-xl sm:text-2xl font-display font-bold">Channel Results</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {channelSearchMutation.data?.map((channel) => (
+                <ChannelCard
+                  key={channel.channelId}
+                  {...channel}
+                  onAnalyze={handleAnalyzeChannel}
+                  isAnalyzing={channelAnalyzeMutation.isPending && channelAnalyzeMutation.variables?.channelId === channel.channelId}
+                />
+              ))}
+            </div>
+          </motion.div>
+        )}
+
         {/* Empty State / Initial Instructions */}
-        {!searchMutation.isSuccess && !searchMutation.isPending && !searchMutation.isError && (
+        {!searchMutation.isSuccess && !channelSearchMutation.isSuccess && !searchMutation.isPending && !channelSearchMutation.isPending && !searchMutation.isError && !channelSearchMutation.isError && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto mt-8 sm:mt-12 text-center px-2 sm:px-0">
             {[
               {
@@ -416,6 +507,12 @@ export default function Home() {
         onClose={() => setSelectedAnalysis(null)}
         analysis={selectedAnalysis}
         onSearchAlternative={handleSearchAlternative}
+      />
+
+      <ChannelAnalysisModal
+        isOpen={!!selectedChannelAnalysis}
+        onClose={() => setSelectedChannelAnalysis(null)}
+        analysis={selectedChannelAnalysis}
       />
     </div>
   );

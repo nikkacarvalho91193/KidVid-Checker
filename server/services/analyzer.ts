@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import type { AlternativeSuggestion, OverstimulationAnalysis } from "@shared/schema";
+import type { AlternativeSuggestion, OverstimulationAnalysis, ChannelVideoBreakdown } from "@shared/schema";
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
@@ -130,4 +130,78 @@ Respond in JSON format:
   } catch {
     throw new Error("Failed to parse AI response");
   }
+}
+
+export interface ChannelSynthesisResult {
+  overallGrade: string;
+  overallReasoning: string;
+  overstimulationRating: string;
+  topConcerns: string[];
+}
+
+export async function synthesizeChannelAnalysis(
+  channelName: string,
+  videoResults: Array<{
+    title: string;
+    isAppropriate: boolean;
+    confidenceScore: number;
+    ageRating: string;
+    reasoning: string;
+    tags: string[];
+    overstimulationRating: string;
+  }>
+): Promise<ChannelSynthesisResult> {
+  const safeCount = videoResults.filter(v => v.isAppropriate).length;
+  const total = videoResults.length;
+
+  const videoSummaries = videoResults.map((v, i) =>
+    `${i + 1}. "${v.title}" — ${v.isAppropriate ? "Safe" : "Flagged"} (${v.ageRating}, confidence: ${v.confidenceScore}%, overstim: ${v.overstimulationRating}) Tags: ${v.tags.join(", ")}. ${v.reasoning}`
+  ).join("\n");
+
+  const prompt = `You are a child safety expert. Analyze the following sample of ${total} recent videos from the YouTube channel "${channelName}" and produce an overall channel safety assessment.
+
+Per-video results:
+${videoSummaries}
+
+Summary stats: ${safeCount}/${total} videos rated safe.
+
+Based on this data, provide:
+1. An overall letter grade (A, B, C, D, or F) where A = very safe for children, F = not safe at all
+2. A 2-3 sentence parent-facing summary explaining the grade
+3. An aggregate overstimulation rating for the channel ("low", "moderate", or "high")
+4. A list of the top concerns found (empty array if the channel is very safe)
+
+Respond in JSON:
+{
+  "overallGrade": "A" | "B" | "C" | "D" | "F",
+  "overallReasoning": "Parent-facing summary...",
+  "overstimulationRating": "low" | "moderate" | "high",
+  "topConcerns": ["concern1", "concern2"]
+}`;
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-5",
+    messages: [
+      {
+        role: "system",
+        content: "You are an expert in child safety and content moderation. Provide an honest, balanced assessment. Always respond with valid JSON.",
+      },
+      { role: "user", content: prompt },
+    ],
+    response_format: { type: "json_object" },
+    max_completion_tokens: 2048,
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) {
+    throw new Error("No response from AI for channel synthesis");
+  }
+
+  const result = JSON.parse(content) as ChannelSynthesisResult;
+  return {
+    overallGrade: result.overallGrade ?? "C",
+    overallReasoning: result.overallReasoning ?? "Analysis completed.",
+    overstimulationRating: result.overstimulationRating ?? "moderate",
+    topConcerns: Array.isArray(result.topConcerns) ? result.topConcerns : [],
+  };
 }
