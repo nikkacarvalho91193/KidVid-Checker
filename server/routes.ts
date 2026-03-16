@@ -130,7 +130,8 @@ export async function registerRoutes(
             channelSubscriberCount = channelInfoData.items[0].statistics?.subscriberCount || null;
           }
         }
-      } catch {
+      } catch (metaErr) {
+        console.warn("Failed to fetch channel metadata:", metaErr);
       }
 
       const analysisResult = await analyzeChannel(

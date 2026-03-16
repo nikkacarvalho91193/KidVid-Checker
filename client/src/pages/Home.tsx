@@ -48,9 +48,9 @@ export default function Home() {
     );
   };
 
-  const handleAnalyzeChannel = (channelId: string) => {
+  const handleAnalyzeChannel = (channelId: string, forceRefresh = false) => {
     channelAnalyzeMutation.mutate(
-      { channelId },
+      { channelId, forceRefresh },
       {
         onSuccess: (data) => {
           const result = data as ChannelAnalysis;
@@ -62,6 +62,10 @@ export default function Home() {
         onError: () => {},
       }
     );
+  };
+
+  const handleReanalyzeChannel = (channelId: string) => {
+    handleAnalyzeChannel(channelId, true);
   };
 
   const handleSearchAlternative = (alternativeQuery: string) => {
@@ -521,6 +525,8 @@ export default function Home() {
         isOpen={!!selectedChannelAnalysis}
         onClose={() => setSelectedChannelAnalysis(null)}
         analysis={selectedChannelAnalysis}
+        onReanalyze={handleReanalyzeChannel}
+        isReanalyzing={channelAnalyzeMutation.isPending}
       />
     </div>
   );

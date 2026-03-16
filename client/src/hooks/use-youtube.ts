@@ -79,7 +79,7 @@ export function useSearchChannels() {
 // === CHANNEL ANALYZE ===
 export function useAnalyzeChannel() {
   return useMutation({
-    mutationFn: async (request: { channelId: string }) => {
+    mutationFn: async (request: { channelId: string; forceRefresh?: boolean }) => {
       const validated = api.channel.analyze.input.parse(request);
       return fetchWithValidation(
         api.channel.analyze.path,
