@@ -10,6 +10,7 @@ export interface IStorage {
   getAnalysisById(id: number): Promise<VideoAnalysis | undefined>;
   getChannelAnalysisByChannelId(channelId: string): Promise<ChannelAnalysis | undefined>;
   createChannelAnalysis(analysis: InsertChannelAnalysis): Promise<ChannelAnalysis>;
+  upsertChannelAnalysis(analysis: InsertChannelAnalysis): Promise<ChannelAnalysis>;
   getAllChannelAnalyses(): Promise<ChannelAnalysis[]>;
 }
 
@@ -39,13 +40,22 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getChannelAnalysisByChannelId(channelId: string): Promise<ChannelAnalysis | undefined> {
-    const [analysis] = await db.select().from(channelAnalysis).where(eq(channelAnalysis.channelId, channelId));
+    const [analysis] = await db.select().from(channelAnalysis).where(eq(channelAnalysis.channelId, channelId)).orderBy(desc(channelAnalysis.analyzedAt)).limit(1);
     return analysis;
   }
 
-  async createChannelAnalysis(analysis: InsertChannelAnalysis): Promise<ChannelAnalysis> {
+  async upsertChannelAnalysis(analysis: InsertChannelAnalysis): Promise<ChannelAnalysis> {
+    const existing = await this.getChannelAnalysisByChannelId(analysis.channelId);
+    if (existing) {
+      const [updated] = await db.update(channelAnalysis).set({ ...analysis, analyzedAt: new Date() }).where(eq(channelAnalysis.id, existing.id)).returning();
+      return updated;
+    }
     const [created] = await db.insert(channelAnalysis).values(analysis).returning();
     return created;
+  }
+
+  async createChannelAnalysis(analysis: InsertChannelAnalysis): Promise<ChannelAnalysis> {
+    return this.upsertChannelAnalysis(analysis);
   }
 
   async getAllChannelAnalyses(): Promise<ChannelAnalysis[]> {

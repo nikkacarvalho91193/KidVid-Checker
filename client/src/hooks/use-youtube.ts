@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, buildUrl, type SearchRequest, type AnalyzeRequest } from "@shared/routes";
+import { api, buildUrl } from "@shared/routes";
+import type { SearchRequest, AnalyzeRequest } from "@shared/schema";
 import { z } from "zod";
 
 // Helper to validate and fetch
