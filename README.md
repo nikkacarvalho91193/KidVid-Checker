@@ -1,12 +1,12 @@
 <div align="center">
 
 ```
- ██████╗██╗  ██╗██╗██╗     ██████╗ ███████╗ █████╗ ███████╗███████╗
-██╔════╝██║  ██║██║██║     ██╔══██╗██╔════╝██╔══██╗██╔════╝██╔════╝
-██║     ███████║██║██║     ██║  ██║███████╗███████║█████╗  █████╗  
-██║     ██╔══██║██║██║     ██║  ██║╚════██║██╔══██║██╔══╝  ██╔══╝  
-╚██████╗██║  ██║██║███████╗██████╔╝███████║██║  ██║██║     ███████╗
- ╚═════╝╚═╝  ╚═╝╚═╝╚══════╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝     ╚══════╝
+ ███████╗ █████╗ ███████╗███████╗███████╗████████╗██████╗ ███████╗ █████╗ ███╗   ███╗
+ ██╔════╝██╔══██╗██╔════╝██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔════╝██╔══██╗████╗ ████║
+ ███████╗███████║█████╗  █████╗  ███████╗   ██║   ██████╔╝█████╗  ███████║██╔████╔██║
+ ╚════██║██╔══██║██╔══╝  ██╔══╝  ╚════██║   ██║   ██╔══██╗██╔══╝  ██╔══██║██║╚██╔╝██║
+ ███████║██║  ██║██║     ███████╗███████║   ██║   ██║  ██║███████╗██║  ██║██║ ╚═╝ ██║
+ ╚══════╝╚═╝  ╚═╝╚═╝     ╚══════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝
 ```
 
 # 🛡️ YouTube Content Safety Analyzer
@@ -34,11 +34,11 @@
 - [How It Works](#-how-it-works)
 - [Overstimulation Analysis](#-overstimulation-analysis)
 - [Safety Reports](#-safety-reports)
+- [Channel Safety Grades](#-channel-safety-grades)
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
 - [Getting Started](#-getting-started)
 - [Environment Variables](#-environment-variables)
-- [Screenshots & Flow](#-screenshots--flow)
 - [Disclaimer](#-disclaimer)
 
 ---
@@ -47,11 +47,12 @@
 
 Every parent has been there — your child asks to watch a YouTube video, and you're not sure if it's truly appropriate. Checking each video manually is time-consuming and unreliable.
 
-**YouTube Content Safety Analyzer** solves this by combining the **YouTube Data API** with **GPT-5 AI** to instantly evaluate videos for:
+**SafeStream** solves this by combining the **YouTube Data API** with **GPT-5 AI** to instantly evaluate videos and entire channels for:
 
 - Age-appropriateness and content rating
 - Overstimulation risk for young children
 - Mature themes, violence, language, and scary content
+- Channel-level A–F safety grades based on recent uploads
 - Alternative child-safe video suggestions
 
 > 💡 Built as a first AI project — demonstrating real-world integration of LLMs into a full-stack web application.
@@ -87,6 +88,25 @@ Each video is analyzed by GPT-5 across multiple dimensions:
 | 🏷️ **Content Tags** | educational, cartoon, violence, scary, gaming, music, etc. |
 | 📊 **Confidence Score** | 0–100% confidence bar showing AI certainty |
 | ✅ **Appropriateness** | Binary safe/unsafe verdict with detailed reasoning |
+
+---
+
+### 📺 Channel Safety Grades
+
+SafeStream can analyze an entire YouTube channel — not just individual videos:
+
+| Grade | Meaning |
+|-------|---------|
+| 🟢 **A** | Excellent — highly appropriate for children |
+| 🔵 **B** | Good — generally safe with minor cautions |
+| 🟡 **C** | Moderate — some content may not suit younger viewers |
+| 🟠 **D** | Poor — frequent concerns, not recommended for children |
+| 🔴 **F** | Unsafe — inappropriate content detected |
+
+- Samples up to 8 recent videos per channel for a balanced assessment
+- Synthesizes results into a single overall grade and written summary
+- Grade badge displayed on the channel card for quick reference
+- Re-analyze button to refresh the assessment with the latest uploads
 
 ---
 
@@ -154,11 +174,11 @@ The AI knows about popular child-friendly channels including:
 
 ### 📄 Exportable Safety Reports
 
-Generate and download a full safety report for any analyzed video:
+Generate and download a full safety report for any analyzed video or channel:
 
 ```
 ════════════════════════════════════════════
-       CHILDSAFE CONTENT ANALYSIS REPORT
+       SafeStream - SAFETY REPORT
 ════════════════════════════════════════════
 Video: "Super Fun Slime for Kids!"
 Channel: FunWithSlime
@@ -179,9 +199,11 @@ Age Recommendation: Best for ages 5+
 Factors: Upbeat background music, colorful visuals
 
 ════════════════════════════════════════════
+Generated by SafeStream
+════════════════════════════════════════════
 ```
 
-- Plain-text `.txt` format for easy sharing
+- Plain-text format for easy sharing
 - Includes all analysis dimensions
 - Timestamped for record-keeping
 - Perfect for school settings, childcare providers, or parental controls
@@ -214,7 +236,7 @@ for a topic    ──▶    returns videos   ──▶   per video
 2. **Fetch** — YouTube Data API returns up to 10 videos
 3. **Analyze** — Click "Analyze" on any card; GPT-5 evaluates the metadata
 4. **Review** — Full analysis displayed in a detailed modal
-5. **Export** — Download the report as a text file
+5. **Export** — Download or copy the report as plain text
 
 ---
 
@@ -242,29 +264,31 @@ for a topic    ──▶    returns videos   ──▶   per video
 ## 📁 Project Structure
 
 ```
-youtube-safety-analyzer/
+safestream/
 │
-├── client/                     # React frontend
+├── client/                       # React frontend
 │   └── src/
 │       ├── pages/
-│       │   └── Home.tsx        # Main landing & search page
+│       │   └── Home.tsx          # Main landing & search page
 │       ├── components/
-│       │   ├── VideoCard.tsx   # Video result card with analysis
-│       │   └── AnalysisModal.tsx # Full analysis detail view
+│       │   ├── VideoCard.tsx     # Video result card with analysis
+│       │   ├── ChannelCard.tsx   # Channel card with grade badge
+│       │   ├── AnalysisModal.tsx # Video analysis detail view
+│       │   └── ChannelAnalysisModal.tsx # Channel analysis detail view
 │       └── lib/
-│           └── queryClient.ts  # API request helper
+│           └── queryClient.ts    # API request helper
 │
-├── server/                     # Express backend
-│   ├── routes.ts               # API route definitions
-│   ├── storage.ts              # Database access layer
+├── server/                       # Express backend
+│   ├── routes.ts                 # API route definitions
+│   ├── storage.ts                # Database access layer
 │   └── services/
-│       ├── analyzer.ts         # GPT-5 AI analysis logic
-│       └── youtube.ts          # YouTube API integration
+│       ├── analyzer.ts           # GPT-5 AI analysis logic
+│       └── youtube.ts            # YouTube API integration
 │
 ├── shared/
-│   └── schema.ts               # Shared types & DB schema (Drizzle)
+│   └── schema.ts                 # Shared types & DB schema (Drizzle)
 │
-└── attached_assets/            # Background images for landing page
+└── attached_assets/              # Background images for landing page
 ```
 
 ---
@@ -306,44 +330,9 @@ The app runs on a single port — Express serves both the API and the Vite-built
 
 ---
 
-## 🖼️ Screenshots & Flow
-
-### Landing Page
-```
-╔══════════════════════════════════════════════════════╗
-║  [📸 child   ]                          [📸 kids   ] ║
-║  [watching TV]   🛡️ ChildSafe          [w/ tablet ] ║
-║                                                      ║
-║         Is This YouTube Video Safe                   ║
-║              for Your Child?                         ║
-║                                                      ║
-║  [ Search videos, channels, topics...   🔍 Search ] ║
-║                                                      ║
-║  ✨ AI Analysis  🧠 Overstimulation  📄 Reports      ║
-║  🔄 Alternatives 🔒 Safe Defaults   📱 Mobile-Ready  ║
-╚══════════════════════════════════════════════════════╝
-```
-
-### Video Results
-```
-╔══════════════════════════════════════════════════════╗
-║ [Thumbnail] 🎬 Video Title Here              ✅ Safe ║
-║             📺 ChannelName                          ║
-║             Age: All Ages   Confidence: 94%          ║
-║             [🔍 Analyze]  [📄 View Report]           ║
-╠══════════════════════════════════════════════════════╣
-║ [Thumbnail] 🎬 Another Video Title           ⚠️ Flag ║
-║             📺 AnotherChannel                        ║
-║             Age: 13+        Confidence: 87%          ║
-║             [🔍 Analyze]  [📄 View Report]           ║
-╚══════════════════════════════════════════════════════╝
-```
-
----
-
 ## ⚠️ Disclaimer
 
-> **This tool is designed to support parental decision-making — not replace it.**
+> **SafeStream is designed to support parental decision-making — not replace it.**
 >
 > The overstimulation analysis feature is for **informational purposes only** and does **not** constitute medical advice. Every child is different. Always use your own judgment when determining what content is appropriate for your child.
 >
@@ -355,6 +344,6 @@ The app runs on a single port — Express serves both the API and the Vite-built
 
 **Made with ❤️ to help keep kids safe online**
 
-*My First AI Project — combining the power of GPT-5 with real-world parenting needs*
+*SafeStream — combining the power of GPT-5 with real-world parenting needs*
 
 </div>
