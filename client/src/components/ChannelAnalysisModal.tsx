@@ -48,7 +48,7 @@ export function ChannelAnalysisModal({ isOpen, onClose, analysis, onReanalyze, i
 
   const generateReportText = () => {
     let report = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SAFESTREAM - CHANNEL SAFETY REPORT
+SafeStream - CHANNEL SAFETY REPORT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 CHANNEL: ${analysis.channelName}

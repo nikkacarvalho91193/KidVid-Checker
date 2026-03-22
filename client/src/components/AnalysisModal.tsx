@@ -43,7 +43,7 @@ export function AnalysisModal({ isOpen, onClose, analysis, onSearchAlternative }
     const tags = analysis.tags?.join(", ") || "None detected";
     
     let report = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SAFESTREAM - SAFETY REPORT
+SafeStream - SAFETY REPORT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 VIDEO TITLE:
