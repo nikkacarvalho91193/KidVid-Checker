@@ -1,8 +1,8 @@
-# KidsSafe Tube - YouTube Content Analyzer
+# SafeStream - YouTube Content Analyzer
 
 ## Overview
 
-KidsSafe Tube is a child safety application that helps parents determine if YouTube videos are appropriate for children. Users can search for YouTube videos, analyze their content using AI, and receive safety ratings, age recommendations, and alternative suggestions for inappropriate content. The app maintains a history of analyzed videos for future reference.
+SafeStream is a child safety application that helps parents determine if YouTube videos are appropriate for children. Users can search for YouTube videos, analyze their content using AI, and receive safety ratings, age recommendations, and alternative suggestions for inappropriate content. The app maintains a history of analyzed videos for future reference.
 
 ## User Preferences
 

@@ -18,7 +18,7 @@ export function Navigation() {
             <ShieldCheck className="w-6 h-6 text-primary" />
           </div>
           <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            KidsSafe Tube
+            SafeStream
           </span>
         </Link>
 
